@@ -1,9 +1,10 @@
 pragma solidity ^0.6.6;
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/proxy/Initializable.sol";
 import "@nomiclabs/buidler/console.sol";
 
-contract Peggy {
+contract Peggy is Initializable {
 	using SafeMath for uint256;
 
 	// These are updated often
@@ -381,7 +382,9 @@ contract Peggy {
 		);
 	}
 
-	constructor(
+	constructor() public {}
+
+	function initialize(
 		// A unique identifier for this peggy instance to use in signatures
 		bytes32 _peggyId,
 		// How much voting power is needed to approve operations
@@ -389,7 +392,7 @@ contract Peggy {
 		// The validator set
 		address[] memory _validators,
 		uint256[] memory _powers
-	) public {
+	) public initializer {
 		// CHECKS
 
 		// Check that validators, powers, and signatures (v,r,s) set is well-formed

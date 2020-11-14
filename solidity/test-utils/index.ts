@@ -25,14 +25,11 @@ export async function deployContracts(
 
   const checkpoint = makeCheckpoint(valAddresses, powers, 0, peggyId);
 
-  const peggy = (await Peggy.deploy(
-    peggyId,
-    powerThreshold,
-    valAddresses,
-    powers
-  )) as Peggy;
+  const peggy = (await Peggy.deploy()) as Peggy;
 
   await peggy.deployed();
+
+  await peggy.initialize(peggyId, powerThreshold, valAddresses, powers);
 
   return { peggy, testERC20, checkpoint };
 }
