@@ -392,7 +392,7 @@ contract Peggy is Initializable {
 		// The validator set
 		address[] memory _validators,
 		uint256[] memory _powers
-	) public initializer {
+	) external initializer {
 		// CHECKS
 
 		// Check that validators, powers, and signatures (v,r,s) set is well-formed
