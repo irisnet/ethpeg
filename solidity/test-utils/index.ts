@@ -1,4 +1,5 @@
 import { Peggy } from "../typechain/Peggy";
+import { PeggyProxy } from "../typechain/PeggyProxy";
 import { TestERC20 } from "../typechain/TestERC20";
 import { ethers } from "@nomiclabs/buidler";
 import { makeCheckpoint, signHash, getSignerAddresses } from "./pure";
@@ -19,16 +20,23 @@ export async function deployContracts(
   const TestERC20 = await ethers.getContractFactory("TestERC20");
   const testERC20 = (await TestERC20.deploy()) as TestERC20;
 
-  const Peggy = await ethers.getContractFactory("Peggy");
+  const PeggyContract = await ethers.getContractFactory("Peggy");
+  const PeggyProxyContract = await ethers.getContractFactory("PeggyProxy");
 
   const valAddresses = await getSignerAddresses(validators);
 
   const checkpoint = makeCheckpoint(valAddresses, powers, 0, peggyId);
 
-  const peggy = (await Peggy.deploy()) as Peggy;
+  const peggyImplementation = (await PeggyContract.deploy()) as Peggy;
+  await peggyImplementation.deployed();
 
-  await peggy.deployed();
+  const signers = await ethers.getSigners();
+  const signersLength = signers.length;
+  const proxyAdmin = await signers[signersLength-1].getAddress();
+  const peggyProxy = (await PeggyProxyContract.deploy(peggyImplementation.address, proxyAdmin, [/*empty function call data*/])) as PeggyProxy;
+  await peggyProxy.deployed();
 
+  var peggy = peggyImplementation.attach(peggyProxy.address);
   await peggy.initialize(peggyId, powerThreshold, valAddresses, powers);
 
   return { peggy, testERC20, checkpoint };
