@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/proxy/Initializable.sol";
 import "@nomiclabs/buidler/console.sol";
 
-contract Peggy is Initializable {
+contract UpgradedPeggy is Initializable {
 	using SafeMath for uint256;
 
 	// These are updated often
@@ -420,4 +420,13 @@ contract Peggy is Initializable {
 		state_powerThreshold = _powerThreshold;
 		state_lastValsetCheckpoint = newCheckpoint;
 	}
+
+	function testUpgrade() external pure returns (string memory){
+		return "peggy upgrade is successful";
+	}
+
+	function getOwnAddress() external view returns (address){
+		return address(this);
+	}
+
 }
