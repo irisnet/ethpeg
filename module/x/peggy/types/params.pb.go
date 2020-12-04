@@ -29,13 +29,14 @@ type Params struct {
 	ProxyContractAddress string `protobuf:"bytes,3,opt,name=proxy_contract_address,json=proxyContractAddress,proto3" json:"proxy_contract_address,omitempty"`
 	LogicContractHash    string `protobuf:"bytes,4,opt,name=logic_contract_hash,json=logicContractHash,proto3" json:"logic_contract_hash,omitempty"`
 	LogicContractAddress string `protobuf:"bytes,5,opt,name=logic_contract_address,json=logicContractAddress,proto3" json:"logic_contract_address,omitempty"`
-	StartThreshold       string `protobuf:"bytes,6,opt,name=start_threshold,json=startThreshold,proto3" json:"start_threshold,omitempty"`
-	BridgeChainId        string `protobuf:"bytes,7,opt,name=bridge_chain_id,json=bridgeChainId,proto3" json:"bridge_chain_id,omitempty"`
-	BootstrapValsetNonce string `protobuf:"bytes,8,opt,name=bootstrap_valset_nonce,json=bootstrapValsetNonce,proto3" json:"bootstrap_valset_nonce,omitempty"`
-	BatchTime            string `protobuf:"bytes,9,opt,name=batch_time,json=batchTime,proto3" json:"batch_time,omitempty"`
-	BatchNum             string `protobuf:"bytes,10,opt,name=batch_num,json=batchNum,proto3" json:"batch_num,omitempty"`
-	UpdateValsetTime     string `protobuf:"bytes,11,opt,name=update_valset_time,json=updateValsetTime,proto3" json:"update_valset_time,omitempty"`
-	UpdateValsetChange   string `protobuf:"bytes,12,opt,name=update_valset_change,json=updateValsetChange,proto3" json:"update_valset_change,omitempty"`
+	Version              string `protobuf:"bytes,6,opt,name=version,proto3" json:"version,omitempty"`
+	StartThreshold       uint64 `protobuf:"varint,7,opt,name=start_threshold,json=startThreshold,proto3" json:"start_threshold,omitempty"`
+	BridgeChainId        uint64 `protobuf:"varint,8,opt,name=bridge_chain_id,json=bridgeChainId,proto3" json:"bridge_chain_id,omitempty"`
+	BootstrapValsetNonce uint64 `protobuf:"varint,9,opt,name=bootstrap_valset_nonce,json=bootstrapValsetNonce,proto3" json:"bootstrap_valset_nonce,omitempty"`
+	BatchInterval        uint64 `protobuf:"varint,10,opt,name=batch_interval,json=batchInterval,proto3" json:"batch_interval,omitempty"`
+	BatchNum             uint64 `protobuf:"varint,11,opt,name=batch_num,json=batchNum,proto3" json:"batch_num,omitempty"`
+	ValsetInterval       uint64 `protobuf:"varint,12,opt,name=valset_interval,json=valsetInterval,proto3" json:"valset_interval,omitempty"`
+	ValsetChange         uint64 `protobuf:"varint,13,opt,name=valset_change,json=valsetChange,proto3" json:"valset_change,omitempty"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -106,53 +107,60 @@ func (m *Params) GetLogicContractAddress() string {
 	return ""
 }
 
-func (m *Params) GetStartThreshold() string {
+func (m *Params) GetVersion() string {
+	if m != nil {
+		return m.Version
+	}
+	return ""
+}
+
+func (m *Params) GetStartThreshold() uint64 {
 	if m != nil {
 		return m.StartThreshold
 	}
-	return ""
+	return 0
 }
 
-func (m *Params) GetBridgeChainId() string {
+func (m *Params) GetBridgeChainId() uint64 {
 	if m != nil {
 		return m.BridgeChainId
 	}
-	return ""
+	return 0
 }
 
-func (m *Params) GetBootstrapValsetNonce() string {
+func (m *Params) GetBootstrapValsetNonce() uint64 {
 	if m != nil {
 		return m.BootstrapValsetNonce
 	}
-	return ""
+	return 0
 }
 
-func (m *Params) GetBatchTime() string {
+func (m *Params) GetBatchInterval() uint64 {
 	if m != nil {
-		return m.BatchTime
+		return m.BatchInterval
 	}
-	return ""
+	return 0
 }
 
-func (m *Params) GetBatchNum() string {
+func (m *Params) GetBatchNum() uint64 {
 	if m != nil {
 		return m.BatchNum
 	}
-	return ""
+	return 0
 }
 
-func (m *Params) GetUpdateValsetTime() string {
+func (m *Params) GetValsetInterval() uint64 {
 	if m != nil {
-		return m.UpdateValsetTime
+		return m.ValsetInterval
 	}
-	return ""
+	return 0
 }
 
-func (m *Params) GetUpdateValsetChange() string {
+func (m *Params) GetValsetChange() uint64 {
 	if m != nil {
-		return m.UpdateValsetChange
+		return m.ValsetChange
 	}
-	return ""
+	return 0
 }
 
 func init() {
@@ -162,33 +170,34 @@ func init() {
 func init() { proto.RegisterFile("peggy/v1/params.proto", fileDescriptor_6514bc7697a79017) }
 
 var fileDescriptor_6514bc7697a79017 = []byte{
-	// 415 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x5c, 0x92, 0x3f, 0x8f, 0xd3, 0x30,
-	0x18, 0xc6, 0x1b, 0x28, 0xbd, 0xd6, 0xfc, 0x39, 0x30, 0x05, 0x19, 0x10, 0xd1, 0x89, 0x01, 0x18,
-	0xa0, 0xb9, 0x13, 0x4c, 0x6c, 0xd0, 0x85, 0x63, 0x38, 0x21, 0x74, 0x62, 0x60, 0xb1, 0x1c, 0xdb,
-	0xb2, 0x23, 0x25, 0x71, 0x64, 0xbf, 0xa9, 0xae, 0x1b, 0x1f, 0x81, 0x91, 0x8f, 0xc4, 0x78, 0x23,
-	0x03, 0x03, 0x6a, 0xbf, 0x08, 0xca, 0xeb, 0x06, 0x5d, 0xb3, 0xe5, 0x7d, 0x7e, 0xbf, 0xd7, 0x8f,
-	0x15, 0x99, 0x3c, 0x68, 0xb4, 0x31, 0xeb, 0x6c, 0x75, 0x92, 0x35, 0xc2, 0x8b, 0x2a, 0x2c, 0x1a,
-	0xef, 0xc0, 0xd1, 0x29, 0xc6, 0x8b, 0xd5, 0xc9, 0xe3, 0xb9, 0x71, 0xc6, 0x61, 0x98, 0x75, 0x5f,
-	0x91, 0x3f, 0xfb, 0x39, 0x26, 0x93, 0xcf, 0xb8, 0x40, 0x1f, 0x91, 0x28, 0xf3, 0x42, 0xb1, 0xe4,
-	0x28, 0x79, 0x39, 0xfb, 0x72, 0x80, 0xf3, 0xa9, 0xa2, 0x0b, 0x72, 0xbf, 0xf1, 0xee, 0x62, 0xcd,
-	0xa5, 0xab, 0xc1, 0x0b, 0x09, 0xdc, 0x8a, 0x60, 0xd9, 0x35, 0xb4, 0xee, 0x21, 0x5a, 0xee, 0xc8,
-	0x47, 0x11, 0x2c, 0x7d, 0x4b, 0x1e, 0x0e, 0x7c, 0xa1, 0x94, 0xd7, 0x21, 0xb0, 0xeb, 0xb8, 0x32,
-	0xdf, 0x5b, 0x79, 0x1f, 0x59, 0xd7, 0x52, 0x3a, 0x53, 0xc8, 0x41, 0xcb, 0x38, 0xb6, 0x20, 0x1a,
-	0xb6, 0x0c, 0xfc, 0xbe, 0xe5, 0x46, 0x6c, 0xd9, 0x5b, 0xe9, 0x5b, 0x5e, 0x90, 0xc3, 0x00, 0xc2,
-	0x03, 0x07, 0xeb, 0x75, 0xb0, 0xae, 0x54, 0x6c, 0x82, 0xfa, 0x1d, 0x8c, 0xcf, 0xfb, 0x94, 0x3e,
-	0x27, 0x87, 0xb9, 0x2f, 0x94, 0xd1, 0x5c, 0x5a, 0x51, 0xd4, 0xdd, 0x6f, 0x39, 0x40, 0xf1, 0x76,
-	0x8c, 0x97, 0x5d, 0x7a, 0xaa, 0xba, 0x6b, 0xe4, 0xce, 0x41, 0x00, 0x2f, 0x1a, 0xbe, 0x12, 0x65,
-	0xd0, 0xc0, 0x6b, 0x57, 0x4b, 0xcd, 0xa6, 0xf1, 0x1a, 0xff, 0xe9, 0x57, 0x84, 0x67, 0x1d, 0xa3,
-	0x4f, 0x09, 0xc9, 0x05, 0x48, 0xcb, 0xa1, 0xa8, 0x34, 0x9b, 0xa1, 0x39, 0xc3, 0xe4, 0xbc, 0xa8,
-	0x34, 0x7d, 0x42, 0xe2, 0xc0, 0xeb, 0xb6, 0x62, 0x04, 0xe9, 0x14, 0x83, 0xb3, 0xb6, 0xa2, 0xaf,
-	0x08, 0x6d, 0x1b, 0x25, 0x40, 0xf7, 0x75, 0x78, 0xc6, 0x4d, 0xb4, 0xee, 0x46, 0x12, 0xab, 0xf0,
-	0xa8, 0x63, 0x32, 0xdf, 0xb7, 0xa5, 0x15, 0xb5, 0xd1, 0xec, 0x16, 0xfa, 0xf4, 0xaa, 0xbf, 0x44,
-	0xf2, 0x6e, 0xfc, 0xfd, 0xcf, 0xd1, 0xe8, 0xc3, 0xa7, 0x5f, 0x9b, 0x34, 0xb9, 0xdc, 0xa4, 0xc9,
-	0xdf, 0x4d, 0x9a, 0xfc, 0xd8, 0xa6, 0xa3, 0xcb, 0x6d, 0x3a, 0xfa, 0xbd, 0x4d, 0x47, 0xdf, 0x8e,
-	0x4d, 0x01, 0xb6, 0xcd, 0x17, 0xd2, 0x55, 0x99, 0x28, 0xc1, 0x6a, 0xf1, 0xba, 0xd6, 0x90, 0xc5,
-	0x17, 0x58, 0x39, 0xd5, 0x96, 0x3a, 0xbb, 0xd8, 0x8d, 0xb0, 0x6e, 0x74, 0xc8, 0x27, 0xf8, 0xda,
-	0xde, 0xfc, 0x0b, 0x00, 0x00, 0xff, 0xff, 0x62, 0x4b, 0xfb, 0xd4, 0xa6, 0x02, 0x00, 0x00,
+	// 429 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x5c, 0x92, 0xbf, 0x8e, 0x13, 0x31,
+	0x10, 0xc6, 0xb3, 0x10, 0xf2, 0xc7, 0x5c, 0xee, 0xc4, 0x12, 0x90, 0x01, 0x69, 0x15, 0x81, 0x80,
+	0x6b, 0xc8, 0x72, 0x82, 0x8a, 0x0e, 0xd2, 0x10, 0x8a, 0x13, 0x3a, 0x21, 0x0a, 0x1a, 0xcb, 0x6b,
+	0x5b, 0xf6, 0x4a, 0xbb, 0xf6, 0xca, 0x76, 0x56, 0x97, 0x8e, 0x47, 0xe0, 0x31, 0x78, 0x14, 0xca,
+	0x2b, 0x29, 0x28, 0x50, 0xf2, 0x22, 0x27, 0x8f, 0x37, 0x91, 0x92, 0x6e, 0xe7, 0xf7, 0x7d, 0x33,
+	0xdf, 0x8e, 0x35, 0xe8, 0x51, 0x23, 0xa4, 0x5c, 0xe7, 0xed, 0x45, 0xde, 0x50, 0x4b, 0x6b, 0x37,
+	0x6f, 0xac, 0xf1, 0x26, 0x1d, 0x01, 0x9e, 0xb7, 0x17, 0x4f, 0xa7, 0xd2, 0x48, 0x03, 0x30, 0x0f,
+	0x5f, 0x51, 0x7f, 0xfe, 0xbb, 0x8f, 0x06, 0x5f, 0xa1, 0x21, 0x7d, 0x82, 0xa2, 0x99, 0x94, 0x1c,
+	0x27, 0xb3, 0xe4, 0x7c, 0x7c, 0x35, 0x84, 0x7a, 0xc9, 0xd3, 0x39, 0x7a, 0xd8, 0x58, 0x73, 0xbd,
+	0x26, 0xcc, 0x68, 0x6f, 0x29, 0xf3, 0x44, 0x51, 0xa7, 0xf0, 0x1d, 0x70, 0x3d, 0x00, 0x69, 0xd1,
+	0x29, 0x9f, 0xa9, 0x53, 0xe9, 0x7b, 0xf4, 0xf8, 0xc8, 0x4f, 0x39, 0xb7, 0xc2, 0x39, 0x7c, 0x17,
+	0x5a, 0xa6, 0x07, 0x2d, 0x1f, 0xa3, 0x16, 0x52, 0x2a, 0x23, 0x4b, 0x76, 0x94, 0xd2, 0x8f, 0x29,
+	0x20, 0x1d, 0xa7, 0x1c, 0xf9, 0x77, 0x29, 0xf7, 0x62, 0xca, 0x41, 0xcb, 0x2e, 0x05, 0xa3, 0x61,
+	0x2b, 0xac, 0x2b, 0x8d, 0xc6, 0x83, 0xb8, 0x65, 0x57, 0xa6, 0xaf, 0xd1, 0x99, 0xf3, 0xd4, 0x7a,
+	0xe2, 0x95, 0x15, 0x4e, 0x99, 0x8a, 0xe3, 0xe1, 0x2c, 0x39, 0xef, 0x5f, 0x9d, 0x02, 0xfe, 0xb6,
+	0xa3, 0xe9, 0x2b, 0x74, 0x56, 0xd8, 0x92, 0x4b, 0x41, 0x98, 0xa2, 0xa5, 0x0e, 0x0f, 0x36, 0x02,
+	0xe3, 0x24, 0xe2, 0x45, 0xa0, 0x4b, 0x1e, 0x7e, 0xb0, 0x30, 0xc6, 0x3b, 0x6f, 0x69, 0x43, 0x5a,
+	0x5a, 0x39, 0xe1, 0x89, 0x36, 0x9a, 0x09, 0x3c, 0x06, 0xfb, 0x74, 0xaf, 0x7e, 0x07, 0xf1, 0x32,
+	0x68, 0xe9, 0x4b, 0x74, 0x5a, 0x50, 0xcf, 0x14, 0x29, 0xb5, 0x17, 0xb6, 0xa5, 0x15, 0x46, 0xdd,
+	0xf0, 0x40, 0x97, 0x1d, 0x4c, 0x9f, 0xa1, 0x71, 0xb4, 0xe9, 0x55, 0x8d, 0xef, 0x83, 0x63, 0x04,
+	0xe0, 0x72, 0x55, 0x87, 0x55, 0xba, 0xbc, 0xfd, 0x90, 0x93, 0xb8, 0x4a, 0xc4, 0xfb, 0x29, 0x2f,
+	0xd0, 0xa4, 0x33, 0x32, 0x45, 0xb5, 0x14, 0x78, 0x02, 0xb6, 0x93, 0x08, 0x17, 0xc0, 0x3e, 0xf4,
+	0x7f, 0xfe, 0x9b, 0xf5, 0x3e, 0x7d, 0xf9, 0xb3, 0xc9, 0x92, 0x9b, 0x4d, 0x96, 0xfc, 0xdf, 0x64,
+	0xc9, 0xaf, 0x6d, 0xd6, 0xbb, 0xd9, 0x66, 0xbd, 0xbf, 0xdb, 0xac, 0xf7, 0xe3, 0xad, 0x2c, 0xbd,
+	0x5a, 0x15, 0x73, 0x66, 0xea, 0x9c, 0x56, 0x5e, 0x09, 0xfa, 0x46, 0x0b, 0x9f, 0xc7, 0x8b, 0xac,
+	0x0d, 0x5f, 0x55, 0x22, 0xbf, 0xee, 0x4a, 0xbf, 0x6e, 0x84, 0x2b, 0x06, 0x70, 0x7d, 0xef, 0x6e,
+	0x03, 0x00, 0x00, 0xff, 0xff, 0x9f, 0x64, 0x9d, 0x12, 0xb6, 0x02, 0x00, 0x00,
 }
 
 func (m *Params) Marshal() (dAtA []byte, err error) {
@@ -211,52 +220,45 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.UpdateValsetChange) > 0 {
-		i -= len(m.UpdateValsetChange)
-		copy(dAtA[i:], m.UpdateValsetChange)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.UpdateValsetChange)))
+	if m.ValsetChange != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.ValsetChange))
 		i--
-		dAtA[i] = 0x62
+		dAtA[i] = 0x68
 	}
-	if len(m.UpdateValsetTime) > 0 {
-		i -= len(m.UpdateValsetTime)
-		copy(dAtA[i:], m.UpdateValsetTime)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.UpdateValsetTime)))
+	if m.ValsetInterval != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.ValsetInterval))
 		i--
-		dAtA[i] = 0x5a
+		dAtA[i] = 0x60
 	}
-	if len(m.BatchNum) > 0 {
-		i -= len(m.BatchNum)
-		copy(dAtA[i:], m.BatchNum)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.BatchNum)))
+	if m.BatchNum != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.BatchNum))
 		i--
-		dAtA[i] = 0x52
+		dAtA[i] = 0x58
 	}
-	if len(m.BatchTime) > 0 {
-		i -= len(m.BatchTime)
-		copy(dAtA[i:], m.BatchTime)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.BatchTime)))
+	if m.BatchInterval != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.BatchInterval))
 		i--
-		dAtA[i] = 0x4a
+		dAtA[i] = 0x50
 	}
-	if len(m.BootstrapValsetNonce) > 0 {
-		i -= len(m.BootstrapValsetNonce)
-		copy(dAtA[i:], m.BootstrapValsetNonce)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.BootstrapValsetNonce)))
+	if m.BootstrapValsetNonce != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.BootstrapValsetNonce))
 		i--
-		dAtA[i] = 0x42
+		dAtA[i] = 0x48
 	}
-	if len(m.BridgeChainId) > 0 {
-		i -= len(m.BridgeChainId)
-		copy(dAtA[i:], m.BridgeChainId)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.BridgeChainId)))
+	if m.BridgeChainId != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.BridgeChainId))
 		i--
-		dAtA[i] = 0x3a
+		dAtA[i] = 0x40
 	}
-	if len(m.StartThreshold) > 0 {
-		i -= len(m.StartThreshold)
-		copy(dAtA[i:], m.StartThreshold)
-		i = encodeVarintParams(dAtA, i, uint64(len(m.StartThreshold)))
+	if m.StartThreshold != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.StartThreshold))
+		i--
+		dAtA[i] = 0x38
+	}
+	if len(m.Version) > 0 {
+		i -= len(m.Version)
+		copy(dAtA[i:], m.Version)
+		i = encodeVarintParams(dAtA, i, uint64(len(m.Version)))
 		i--
 		dAtA[i] = 0x32
 	}
@@ -335,33 +337,30 @@ func (m *Params) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovParams(uint64(l))
 	}
-	l = len(m.StartThreshold)
+	l = len(m.Version)
 	if l > 0 {
 		n += 1 + l + sovParams(uint64(l))
 	}
-	l = len(m.BridgeChainId)
-	if l > 0 {
-		n += 1 + l + sovParams(uint64(l))
+	if m.StartThreshold != 0 {
+		n += 1 + sovParams(uint64(m.StartThreshold))
 	}
-	l = len(m.BootstrapValsetNonce)
-	if l > 0 {
-		n += 1 + l + sovParams(uint64(l))
+	if m.BridgeChainId != 0 {
+		n += 1 + sovParams(uint64(m.BridgeChainId))
 	}
-	l = len(m.BatchTime)
-	if l > 0 {
-		n += 1 + l + sovParams(uint64(l))
+	if m.BootstrapValsetNonce != 0 {
+		n += 1 + sovParams(uint64(m.BootstrapValsetNonce))
 	}
-	l = len(m.BatchNum)
-	if l > 0 {
-		n += 1 + l + sovParams(uint64(l))
+	if m.BatchInterval != 0 {
+		n += 1 + sovParams(uint64(m.BatchInterval))
 	}
-	l = len(m.UpdateValsetTime)
-	if l > 0 {
-		n += 1 + l + sovParams(uint64(l))
+	if m.BatchNum != 0 {
+		n += 1 + sovParams(uint64(m.BatchNum))
 	}
-	l = len(m.UpdateValsetChange)
-	if l > 0 {
-		n += 1 + l + sovParams(uint64(l))
+	if m.ValsetInterval != 0 {
+		n += 1 + sovParams(uint64(m.ValsetInterval))
+	}
+	if m.ValsetChange != 0 {
+		n += 1 + sovParams(uint64(m.ValsetChange))
 	}
 	return n
 }
@@ -563,7 +562,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field StartThreshold", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -591,13 +590,32 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.StartThreshold = string(dAtA[iNdEx:postIndex])
+			m.Version = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 7:
-			if wireType != 2 {
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StartThreshold", wireType)
+			}
+			m.StartThreshold = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.StartThreshold |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BridgeChainId", wireType)
 			}
-			var stringLen uint64
+			m.BridgeChainId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowParams
@@ -607,29 +625,16 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.BridgeChainId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BridgeChainId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 8:
-			if wireType != 2 {
+		case 9:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BootstrapValsetNonce", wireType)
 			}
-			var stringLen uint64
+			m.BootstrapValsetNonce = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowParams
@@ -639,61 +644,35 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.BootstrapValsetNonce |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BootstrapValsetNonce = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 9:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchTime", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BatchTime = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 10:
-			if wireType != 2 {
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchInterval", wireType)
+			}
+			m.BatchInterval = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BatchInterval |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 11:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BatchNum", wireType)
 			}
-			var stringLen uint64
+			m.BatchNum = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowParams
@@ -703,61 +682,16 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.BatchNum |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BatchNum = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 11:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UpdateValsetTime", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowParams
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UpdateValsetTime = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 12:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UpdateValsetChange", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ValsetInterval", wireType)
 			}
-			var stringLen uint64
+			m.ValsetInterval = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowParams
@@ -767,24 +701,30 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.ValsetInterval |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthParams
+		case 13:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ValsetChange", wireType)
 			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthParams
+			m.ValsetChange = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ValsetChange |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
 			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UpdateValsetChange = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipParams(dAtA[iNdEx:])

@@ -25,9 +25,9 @@ func NewPeggyBootstrapProposal(
 	proxyContractAddress string,
 	logicContractHash string,
 	logicContractAddress string,
-	startThreshold string,
-	bridgeChainId string,
-	valsetNonce string,
+	startThreshold uint64,
+	bridgeChainId uint64,
+	valsetNonce uint64,
 ) *PeggyBootstrapProposal {
 	return &PeggyBootstrapProposal{
 		title,
@@ -66,18 +66,20 @@ func (pbp PeggyBootstrapProposal) String() string {
 	var b strings.Builder
 	b.WriteString(fmt.Sprintf(
 		"Community Pool Spend Proposal:\n"+
-			"	Title:       		%s\n"+
-			"	Description: 		%s\n"+
-			"	ProxyContractHash: %s\n"+
-			"	LogicContractHash: %s\n"+
-			"	StartThreshold: 	%s\n"+
-			"	BridgeChainId: 	%s\n",
+			"	Title:       			%s\n"+
+			"	Description: 			%s\n"+
+			"	ProxyContractHash: 		%s\n"+
+			"	LogicContractHash: 		%s\n"+
+			"	StartThreshold: 		%d\n"+
+			"	BridgeChainId: 			%d\n"+
+			"	BootstrapValsetNonce: 	%d\n",
 		pbp.Title,
 		pbp.Description,
 		pbp.ProxyContractHash,
 		pbp.LogicContractHash,
 		pbp.StartThreshold,
 		pbp.BridgeChainId,
+		pbp.BootstrapValsetNonce,
 	))
 	return b.String()
 }
@@ -124,7 +126,7 @@ func (pup PeggyUpgradeProposal) String() string {
 			"	Title:       			%s\n"+
 			"	Description: 			%s\n"+
 			"	Version: 				%s\n"+
-			"	LogicContractHash: 	%s\n"+
+			"	LogicContractHash: 		%s\n"+
 			"	LogicContractAddress: 	%s\n",
 		pup.Title,
 		pup.Description,
