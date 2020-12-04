@@ -40,14 +40,14 @@ func peggyBootstrapHandler(clientCtx client.Context) http.HandlerFunc {
 
 		content := types.NewPeggyBootstrapProposal(
 			req.Title,
-			req.PeggyId,
+			req.PeggyID,
 			req.Description,
 			req.ProxyContractHash,
 			req.ProxyContractAddress,
 			req.LogicContractHash,
 			req.LogicContractAddress,
 			req.StartThreshold,
-			req.BridgeChainId,
+			req.BridgeChainID,
 			req.BootstrapValsetNonce,
 		)
 

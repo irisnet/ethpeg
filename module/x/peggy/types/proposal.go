@@ -20,25 +20,25 @@ var (
 func NewPeggyBootstrapProposal(
 	title string,
 	description string,
-	peggyId string,
+	peggyID string,
 	proxyContractHash string,
 	proxyContractAddress string,
 	logicContractHash string,
 	logicContractAddress string,
 	startThreshold uint64,
-	bridgeChainId uint64,
+	bridgeChainID uint64,
 	valsetNonce uint64,
 ) *PeggyBootstrapProposal {
 	return &PeggyBootstrapProposal{
 		title,
 		description,
-		peggyId,
+		peggyID,
 		proxyContractHash,
 		proxyContractAddress,
 		logicContractHash,
 		logicContractAddress,
 		startThreshold,
-		bridgeChainId,
+		bridgeChainID,
 		valsetNonce,
 	}
 }
