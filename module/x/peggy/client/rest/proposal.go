@@ -48,7 +48,7 @@ func peggyBootstrapHandler(clientCtx client.Context) http.HandlerFunc {
 			req.LogicContractAddress,
 			req.StartThreshold,
 			req.BridgeChainId,
-			req.ValsetNonce,
+			req.BootstrapValsetNonce,
 		)
 
 		msg, err := govtypes.NewMsgSubmitProposal(content, req.Deposit, req.Proposer)

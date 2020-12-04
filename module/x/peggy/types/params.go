@@ -14,13 +14,14 @@ var (
 	KeyProxyContractAddress = []byte("ProxyContractAddress")
 	KeyLogicContractHash    = []byte("LogicContractHash")
 	KeyLogicContractAddress = []byte("LogicContractAddress")
+	KeyVersion              = []byte("Version")
 	KeyStartThreshold       = []byte("StartThreshold")
 	KeyBridgeChainID        = []byte("BridgeChainID")
 	BootstrapValsetNonce    = []byte("BootstrapValsetNonce")
-	KeyBatchTime            = []byte("BatchTime")
+	KeyBatchInterval        = []byte("BatchInterval")
 	KeyBatchNum             = []byte("BatchNum")
-	KeyUpdateValsetTime     = []byte("UpdateValsetTime")
-	KeyUpdateValsetChange   = []byte("UpdateValsetChange")
+	KeyValsetInterval       = []byte("ValsetInterval")
+	KeyValsetChange         = []byte("ValsetChange")
 )
 
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
@@ -30,13 +31,14 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyProxyContractAddress, &p.ProxyContractAddress, validateProxyContractAddress),
 		paramtypes.NewParamSetPair(KeyLogicContractHash, &p.LogicContractHash, validateLogicContractHash),
 		paramtypes.NewParamSetPair(KeyLogicContractAddress, &p.LogicContractAddress, validateLogicContractAddress),
+		paramtypes.NewParamSetPair(KeyVersion, &p.Version, validateVersion),
 		paramtypes.NewParamSetPair(KeyStartThreshold, &p.StartThreshold, validateStartThreshold),
 		paramtypes.NewParamSetPair(KeyBridgeChainID, &p.BridgeChainId, validateBridgeChainID),
 		paramtypes.NewParamSetPair(BootstrapValsetNonce, &p.BootstrapValsetNonce, validateBootstrapValsetNonce),
-		paramtypes.NewParamSetPair(KeyBatchTime, &p.BatchTime, validateBatchTime),
+		paramtypes.NewParamSetPair(KeyBatchInterval, &p.BatchInterval, validateBatchTime),
 		paramtypes.NewParamSetPair(KeyBatchNum, &p.BatchNum, validateBatchNum),
-		paramtypes.NewParamSetPair(KeyUpdateValsetTime, &p.UpdateValsetTime, validateUpdateValsetTime),
-		paramtypes.NewParamSetPair(KeyUpdateValsetChange, &p.UpdateValsetChange, validateUpdateValsetChange),
+		paramtypes.NewParamSetPair(KeyValsetInterval, &p.ValsetInterval, validateUpdateValsetTime),
+		paramtypes.NewParamSetPair(KeyValsetChange, &p.ValsetChange, validateUpdateValsetChange),
 	}
 }
 
@@ -46,13 +48,14 @@ func NewParams(
 	proxyContractAddress string,
 	logicContractHash string,
 	logicContractAddress string,
-	startThreshold string,
-	bridgeChainId string,
-	bootstrapValsetNonce string,
-	batchTime string,
-	batchNum string,
-	updateValsetTime string,
-	updateValsetChange string,
+	version string,
+	startThreshold uint64,
+	bridgeChainID uint64,
+	bootstrapValsetNonce uint64,
+	batchInterval uint64,
+	batchNum uint64,
+	valsetInterval uint64,
+	valsetChange uint64,
 ) Params {
 	return Params{
 		PeggyId:              peggyID,
@@ -60,13 +63,14 @@ func NewParams(
 		ProxyContractAddress: proxyContractAddress,
 		LogicContractHash:    logicContractHash,
 		LogicContractAddress: logicContractAddress,
+		Version:              version,
 		StartThreshold:       startThreshold,
-		BridgeChainId:        bridgeChainId,
+		BridgeChainId:        bridgeChainID,
 		BootstrapValsetNonce: bootstrapValsetNonce,
-		BatchTime:            batchTime,
+		BatchInterval:        batchInterval,
 		BatchNum:             batchNum,
-		UpdateValsetTime:     updateValsetTime,
-		UpdateValsetChange:   updateValsetChange,
+		ValsetInterval:       valsetInterval,
+		ValsetChange:         valsetChange,
 	}
 }
 
@@ -81,13 +85,14 @@ func DefaultParams() *Params {
 		ProxyContractAddress: "",
 		LogicContractHash:    "",
 		LogicContractAddress: "",
-		StartThreshold:       "",
-		BridgeChainId:        "",
-		BootstrapValsetNonce: "",
-		BatchTime:            "",
-		BatchNum:             "",
-		UpdateValsetTime:     "",
-		UpdateValsetChange:   "",
+		Version:              "",
+		StartThreshold:       uint64(0),
+		BridgeChainId:        uint64(0),
+		BootstrapValsetNonce: uint64(0),
+		BatchInterval:        uint64(0),
+		BatchNum:             uint64(0),
+		ValsetInterval:       uint64(0),
+		ValsetChange:         uint64(0),
 	}
 }
 
@@ -123,6 +128,11 @@ func validateLogicContractHash(i interface{}) error {
 }
 
 func validateLogicContractAddress(i interface{}) error {
+	// TODO
+	return nil
+}
+
+func validateVersion(i interface{}) error {
 	// TODO
 	return nil
 }

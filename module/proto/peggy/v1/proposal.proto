@@ -17,9 +17,9 @@ message PeggyBootstrapProposal {
     string proxy_contract_address = 5 [ (gogoproto.moretags) = "yaml:\"proxy_contract_address\"" ];
     string logic_contract_hash = 6 [ (gogoproto.moretags) = "yaml:\"logic_contract_hash\"" ];
     string logic_contract_address = 7 [ (gogoproto.moretags) = "yaml:\"logic_contract_address\"" ];
-    string start_threshold = 8 [ (gogoproto.moretags) = "yaml:\"start_threshold\"" ];
-    string bridge_chain_id = 9 [ (gogoproto.moretags) = "yaml:\"bridge_chain_id\"" ];
-    string bootstrap_valset_nonce = 10 [ (gogoproto.moretags) = "yaml:\"bootstrap_valset_nonce\"" ];
+    uint64 start_threshold = 8 [ (gogoproto.moretags) = "yaml:\"start_threshold\"" ];
+    uint64 bridge_chain_id = 9 [ (gogoproto.moretags) = "yaml:\"bridge_chain_id\"" ];
+    uint64 bootstrap_valset_nonce = 10 [ (gogoproto.moretags) = "yaml:\"bootstrap_valset_nonce\"" ];
 }
 
 message PeggyBootstrapProposalWithDeposit {
@@ -33,9 +33,9 @@ message PeggyBootstrapProposalWithDeposit {
     string proxy_contract_address = 5 [ (gogoproto.moretags) = "yaml:\"proxy_contract_address\"" ];
     string logic_contract_hash = 6 [ (gogoproto.moretags) = "yaml:\"logic_contract_hash\"" ];
     string logic_contract_address = 7 [ (gogoproto.moretags) = "yaml:\"logic_contract_address\"" ];
-    string start_threshold = 8 [ (gogoproto.moretags) = "yaml:\"start_threshold\"" ];
-    string bridge_chain_id = 9 [ (gogoproto.moretags) = "yaml:\"bridge_chain_id\"" ];
-    string bootstrap_valset_nonce = 10 [ (gogoproto.moretags) = "yaml:\"bootstrap_valset_nonce\"" ];
+    uint64 start_threshold = 8 [ (gogoproto.moretags) = "yaml:\"start_threshold\"" ];
+    uint64 bridge_chain_id = 9 [ (gogoproto.moretags) = "yaml:\"bridge_chain_id\"" ];
+    uint64 bootstrap_valset_nonce = 10 [ (gogoproto.moretags) = "yaml:\"bootstrap_valset_nonce\"" ];
     string deposit = 11 [ (gogoproto.moretags) = "yaml:\"deposit\"" ];
 }
 

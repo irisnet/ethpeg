@@ -15,9 +15,9 @@ type PeggyBootstrapProposalReq struct {
 	ProxyContractAddress string         `json:"proxy_contract_address" yaml:"proxy_contract_address"`
 	LogicContractHash    string         `json:"logic_contract_hash" yaml:"logic_contract_hash"`
 	LogicContractAddress string         `json:"logic_contract_address" yaml:"logic_contract_address"`
-	StartThreshold       string         `json:"start_threshold" yaml:"start_threshold"`
-	BridgeChainId        string         `json:"bridge_chain_id" yaml:"bridge_chain_id"`
-	ValsetNonce          string         `json:"valset_nonce" yaml:"valset_nonce"`
+	StartThreshold       uint64         `json:"start_threshold" yaml:"start_threshold"`
+	BridgeChainId        uint64         `json:"bridge_chain_id" yaml:"bridge_chain_id"`
+	BootstrapValsetNonce uint64         `json:"bootstrap_valset_nonce" yaml:"bootstrap_valset_nonce"`
 	Proposer             sdk.AccAddress `json:"proposer" yaml:"proposer"`
 	Deposit              sdk.Coins      `json:"deposit" yaml:"deposit"`
 }
