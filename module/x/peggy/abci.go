@@ -11,14 +11,11 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	param := k.GetParams(ctx)
 	batchInterval := param.BatchInterval
 	batchNum := param.BatchNum
-	total := k.GetUnbatchedTx(ctx)
 
 	logger := ctx.Logger().With("module", types.ModuleName)
-	if (ctx.BlockHeight()%int64(batchInterval) == 0) || (total >= batchNum) {
-		batchID, err := k.BuildTxBatch(ctx, int(batchNum))
-		if err != nil {
+	if (ctx.BlockHeight()%int64(batchInterval) == 0) || (k.GetUnbatchedTx(ctx) >= batchNum) {
+		if _, err := k.BuildTxBatch(ctx, int(batchNum)); err != nil {
 			logger.Error("build tx batch from pool failed", "err", err.Error())
 		}
 	}
-
 }

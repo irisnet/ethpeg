@@ -16,7 +16,11 @@ import (
 // - burns the voucher for transfer amount and fees
 // - persists an OutgoingTx
 // - adds the TX to the `available` TX pool via a second index
-func (k Keeper) PushToOutgoingPool(ctx sdk.Context, sender sdk.AccAddress, counterpartReceiver string, amount sdk.Coin, fee sdk.Coin) (uint64, error) {
+func (k Keeper) PushToOutgoingPool(ctx sdk.Context,
+	sender sdk.AccAddress,
+	counterpartReceiver string,
+	amount sdk.Coin,
+	fee sdk.Coin) (uint64, error) {
 	// Ensure that the coin is a peggy voucher
 	if _, err := types.ValidatePeggyCoin(amount); err != nil {
 		return 0, fmt.Errorf("amount not a peggy voucher coin: %s", err)
@@ -54,13 +58,16 @@ func (k Keeper) PushToOutgoingPool(ctx sdk.Context, sender sdk.AccAddress, count
 	// add a second index with the fee
 	k.appendUnbatchedTxByFee(ctx, fee, nextID)
 
+	// add a second index with the unbatched tx count
+	k.incrUnbatchedTxCnt(ctx, 1)
+
 	// todo: add second index for sender so that we can easily query: give pending Tx by sender
 	// todo: what about a second index for receiver?
 
 	poolEvent := sdk.NewEvent(
 		types.EventTypeBridgeWithdrawalReceived,
 		sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		sdk.NewAttribute(types.AttributeKeyContract, k.GetBridgeContractAddress(ctx)),
+		//sdk.NewAttribute(types.AttributeKeyContract, k.GetBridgeContractAddress(ctx)),
 		sdk.NewAttribute(types.AttributeKeyBridgeChainID, strconv.Itoa(int(k.GetBridgeChainID(ctx)))),
 		sdk.NewAttribute(types.AttributeKeyOutgoingTXID, strconv.Itoa(int(nextID))),
 		sdk.NewAttribute(types.AttributeKeyNonce, fmt.Sprint(nextID)),
@@ -75,18 +82,18 @@ func (k Keeper) PushToOutgoingPool(ctx sdk.Context, sender sdk.AccAddress, count
 // - select available transactions from the outgoing transaction pool sorted by fee desc
 // - persist an outgoing batch object with an incrementing ID = nonce
 // - emit an event
-func (k Keeper) BuildTxBatch(ctx sdk.Context, maxElements int) error {
-	if maxElements == 0 {
-		return sdkerrors.Wrap(types.ErrInvalid, "max elements value")
+func (k Keeper) BuildTxBatch(ctx sdk.Context, maxBatchNum int) (uint64, error) {
+	if maxBatchNum == 0 {
+		return 0, sdkerrors.Wrap(types.ErrInvalid, "max elements value")
 	}
 	// TODO: figure out how to check for know or unknown denoms? this might not matter anymore
-	selectedTx, err := k.pickUnbatchedTx(ctx, maxElements)
+	selectedTx, err := k.pickUnbatchedTx(ctx, maxBatchNum)
 	if len(selectedTx) == 0 || err != nil {
-		return err
+		return 0, err
 	}
 
-	if err := k.decrPoolUnbatchedTxCnt(ctx, len(selectedTx)); err != nil {
-		return sdkerrors.Wrap(types.ErrInternal, err.Error())
+	if err := k.decrUnbatchedTxCnt(ctx, len(selectedTx)); err != nil {
+		return 0, sdkerrors.Wrap(types.ErrInternal, err.Error())
 	}
 
 	nextID := k.autoIncrementID(ctx, types.KeyLastOutgoingBatchID)
@@ -102,13 +109,13 @@ func (k Keeper) BuildTxBatch(ctx sdk.Context, maxElements int) error {
 	batchEvent := sdk.NewEvent(
 		types.EventTypeOutgoingBatch,
 		sdk.NewAttribute(sdk.AttributeKeyModule, types.ModuleName),
-		sdk.NewAttribute(types.AttributeKeyContract, k.GetBridgeContractAddress(ctx)),
+		//sdk.NewAttribute(types.AttributeKeyContract, k.GetBridgeContractAddress(ctx)),
 		sdk.NewAttribute(types.AttributeKeyBridgeChainID, strconv.Itoa(int(k.GetBridgeChainID(ctx)))),
 		sdk.NewAttribute(types.AttributeKeyOutgoingBatchID, fmt.Sprint(nextID)),
 		sdk.NewAttribute(types.AttributeKeyNonce, fmt.Sprint(nextID)),
 	)
 	ctx.EventManager().EmitEvent(batchEvent)
-	return nil
+	return batch.BatchNonce, nil
 }
 
 // IteratePoolTxByFee itetates over the outgoing pool which is sorted by fee
@@ -133,6 +140,30 @@ func (k Keeper) IteratePoolTxByFee(ctx sdk.Context, cb func(uint64, *types.Outgo
 	return
 }
 
+// GetUnbatchedTx return the unbatched tx in pool
+func (k Keeper) GetUnbatchedTx(ctx sdk.Context) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.UnbatchedTxCountKey)
+	var total uint64 = 0
+	if bz != nil {
+		total = binary.BigEndian.Uint64(bz)
+	}
+	return total
+}
+
+// GetTxBatch loads a batch object. Returns nil when not exists.
+func (k Keeper) GetTxBatch(ctx sdk.Context, nonce uint64) *types.OutgoingTxBatch {
+	store := ctx.KVStore(k.storeKey)
+	key := types.GetOutgoingTxBatchKey("", nonce)
+	bz := store.Get(key)
+	if len(bz) == 0 {
+		return nil
+	}
+	var b types.OutgoingTxBatch
+	k.cdc.MustUnmarshalBinaryBare(bz, &b)
+	return &b
+}
+
 // appendToUnbatchedTXIndex add at the end when tx with same fee exists
 func (k Keeper) appendUnbatchedTxByFee(ctx sdk.Context, fee sdk.Coin, txID uint64) {
 	store := ctx.KVStore(k.storeKey)
@@ -146,25 +177,15 @@ func (k Keeper) appendUnbatchedTxByFee(ctx sdk.Context, fee sdk.Coin, txID uint6
 	store.Set(idxKey, k.cdc.MustMarshalBinaryBare(&idSet))
 }
 
-func (k Keeper) GetUnbatchedTx(ctx sdk.Context) uint64 {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.UnbatchedTxCountKey)
-	var total uint64 = 0
-	if bz != nil {
-		total = binary.BigEndian.Uint64(bz)
-	}
-	return total
-}
-
-func (k Keeper) incrPoolUnbatchedTxCnt(ctx sdk.Context) {
+func (k Keeper) incrUnbatchedTxCnt(ctx sdk.Context, delta int) {
 	var total = k.GetUnbatchedTx(ctx)
-	bz := sdk.Uint64ToBigEndian(total + 1)
+	bz := sdk.Uint64ToBigEndian(total + uint64(delta))
 
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.UnbatchedTxCountKey, bz)
 }
 
-func (k Keeper) decrPoolUnbatchedTxCnt(ctx sdk.Context, delta int) error {
+func (k Keeper) decrUnbatchedTxCnt(ctx sdk.Context, delta int) error {
 	var total = k.GetUnbatchedTx(ctx)
 	if total-uint64(delta) < 0 {
 		return fmt.Errorf("unbatched tx count %d, but decrement %d", total, delta)
