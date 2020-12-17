@@ -65,7 +65,7 @@ func (pbp *PeggyBootstrapProposal) ValidateBasic() error {
 func (pbp PeggyBootstrapProposal) String() string {
 	var b strings.Builder
 	b.WriteString(fmt.Sprintf(
-		"Community Pool Spend Proposal:\n"+
+		"Peggy Bootstrap Proposal:\n"+
 			"	Title:       			%s\n"+
 			"	Description: 			%s\n"+
 			"	ProxyContractHash: 		%s\n"+
@@ -122,7 +122,7 @@ func (pup *PeggyUpgradeProposal) ValidateBasic() error {
 func (pup PeggyUpgradeProposal) String() string {
 	var b strings.Builder
 	b.WriteString(fmt.Sprintf(
-		"Community Pool Spend Proposal:\n"+
+		"Peggy Upgrade Proposal:\n"+
 			"	Title:       			%s\n"+
 			"	Description: 			%s\n"+
 			"	Version: 				%s\n"+
