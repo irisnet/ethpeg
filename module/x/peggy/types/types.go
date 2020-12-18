@@ -169,3 +169,17 @@ func (v *Valset) WithoutEmptyMembers() *Valset {
 	}
 	return &r
 }
+
+// MapValset returns a map Valset
+func (v *Valset) MapValset() map[string]*BridgeValidator {
+	mbv := make(map[string]*BridgeValidator, len(v.Members))
+	if v == nil {
+		return mbv
+	}
+	for i := range v.Members {
+		if err := v.Members[i].ValidateBasic(); err == nil {
+			mbv[v.Members[i].EthereumAddress] = v.Members[i]
+		}
+	}
+	return mbv
+}
