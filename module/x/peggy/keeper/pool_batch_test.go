@@ -52,7 +52,7 @@ func TestPushToOutgoingPool(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, len(exp), int(k.GetUnbatchedTx(ctx)))
+	assert.Equal(t, len(exp), int(k.GetUnbatchedTxCnt(ctx)))
 	assert.Equal(t, exp, got)
 }
 
@@ -93,7 +93,7 @@ func TestBuildTxBatch(t *testing.T) {
 	}
 
 	assert.EqualValues(t, exp, txBatch.Transactions)
-	assert.Equal(t, 0, int(k.GetUnbatchedTx(ctx)))
+	assert.Equal(t, 0, int(k.GetUnbatchedTxCnt(ctx)))
 }
 
 func pushToOutgoingPool(t *testing.T, ctx sdk.Context, k Keeper, tk TestKeepers) {

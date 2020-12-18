@@ -140,8 +140,8 @@ func (k Keeper) IteratePoolTxByFee(ctx sdk.Context, cb func(uint64, *types.Outgo
 	return
 }
 
-// GetUnbatchedTx return the unbatched tx in pool
-func (k Keeper) GetUnbatchedTx(ctx sdk.Context) uint64 {
+// GetUnbatchedTxCnt return the unbatched tx in pool
+func (k Keeper) GetUnbatchedTxCnt(ctx sdk.Context) uint64 {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.UnbatchedTxCountKey)
 	var total uint64 = 0
@@ -178,7 +178,7 @@ func (k Keeper) appendUnbatchedTxByFee(ctx sdk.Context, fee sdk.Coin, txID uint6
 }
 
 func (k Keeper) incrUnbatchedTxCnt(ctx sdk.Context, delta int) {
-	var total = k.GetUnbatchedTx(ctx)
+	var total = k.GetUnbatchedTxCnt(ctx)
 	bz := sdk.Uint64ToBigEndian(total + uint64(delta))
 
 	store := ctx.KVStore(k.storeKey)
@@ -186,7 +186,7 @@ func (k Keeper) incrUnbatchedTxCnt(ctx sdk.Context, delta int) {
 }
 
 func (k Keeper) decrUnbatchedTxCnt(ctx sdk.Context, delta int) error {
-	var total = k.GetUnbatchedTx(ctx)
+	var total = k.GetUnbatchedTxCnt(ctx)
 	if total-uint64(delta) < 0 {
 		return fmt.Errorf("unbatched tx count %d, but decrement %d", total, delta)
 	}
