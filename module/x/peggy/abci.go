@@ -36,18 +36,16 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 		latestValset = currentValset
 	}
 
-	valsetMap := currentValset.MapValset()
+	currentValsetMap, currentTotalPower := currentValset.MapValsetWithTotalPower()
 
-	//the power of the last validator set in this validator set
+	//the power of the last validator set in current validator set
 	latestTotalPower := uint64(0)
 	//the total power in current valset
-	currentTotalPower := uint64(0)
 	for _, val := range latestValset.Members {
-		latestVal, ok := valsetMap[val.EthereumAddress]
+		currentVal, ok := currentValsetMap[val.EthereumAddress]
 		if ok {
-			latestTotalPower += latestVal.Power
+			latestTotalPower += currentVal.Power
 		}
-		currentTotalPower += val.Power
 	}
 
 	var diffPower = currentTotalPower - latestTotalPower
