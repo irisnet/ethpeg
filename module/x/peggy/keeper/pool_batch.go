@@ -92,7 +92,7 @@ func (k Keeper) BuildTxBatch(ctx sdk.Context, maxBatchNum int) (uint64, error) {
 		return 0, err
 	}
 
-	if err := k.decrUnbatchedTxCnt(ctx, len(selectedTx)); err != nil {
+	if err := k.decrUnbatchedTxCnt(ctx, uint64(len(selectedTx))); err != nil {
 		return 0, sdkerrors.Wrap(types.ErrInternal, err.Error())
 	}
 
@@ -177,22 +177,22 @@ func (k Keeper) appendUnbatchedTxByFee(ctx sdk.Context, fee sdk.Coin, txID uint6
 	store.Set(idxKey, k.cdc.MustMarshalBinaryBare(&idSet))
 }
 
-func (k Keeper) incrUnbatchedTxCnt(ctx sdk.Context, delta int) {
+func (k Keeper) incrUnbatchedTxCnt(ctx sdk.Context, delta uint64) {
 	var total = k.GetUnbatchedTxCnt(ctx)
-	bz := sdk.Uint64ToBigEndian(total + uint64(delta))
+	bz := sdk.Uint64ToBigEndian(total + delta)
 
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.UnbatchedTxCountKey, bz)
 }
 
-func (k Keeper) decrUnbatchedTxCnt(ctx sdk.Context, delta int) error {
+func (k Keeper) decrUnbatchedTxCnt(ctx sdk.Context, delta uint64) error {
 	var total = k.GetUnbatchedTxCnt(ctx)
-	if total-uint64(delta) < 0 {
+	if total-delta < 0 {
 		return fmt.Errorf("unbatched tx count %d, but decrement %d", total, delta)
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	bz := sdk.Uint64ToBigEndian(total - uint64(delta))
+	bz := sdk.Uint64ToBigEndian(total - delta)
 	store.Set(types.UnbatchedTxCountKey, bz)
 	return nil
 }
