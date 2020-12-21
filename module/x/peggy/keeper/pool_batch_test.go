@@ -21,8 +21,10 @@ func TestPushToOutgoingPool(t *testing.T) {
 	pushToOutgoingPool(t, ctx, k, keepers)
 	// then
 	var got []*types.OutgoingTx
+	var actualFees = sdk.NewCoins()
 	k.IteratePoolTxByFee(ctx, func(_ uint64, tx *types.OutgoingTx) bool {
 		got = append(got, tx)
+		actualFees = actualFees.Add(tx.BridgeFee)
 		return false
 	})
 	exp := []*types.OutgoingTx{
@@ -54,6 +56,9 @@ func TestPushToOutgoingPool(t *testing.T) {
 
 	assert.Equal(t, len(exp), int(k.GetUnbatchedTxCnt(ctx)))
 	assert.Equal(t, exp, got)
+
+	fees := keepers.BankKeeper.GetAllBalances(ctx, types.FeeCollectorAddress())
+	assert.Equal(t, actualFees, fees)
 }
 
 func TestBuildTxBatch(t *testing.T) {

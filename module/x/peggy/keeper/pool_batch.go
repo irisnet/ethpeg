@@ -27,10 +27,16 @@ func (k Keeper) PushToOutgoingPool(ctx sdk.Context,
 	}
 
 	// TODO fee shoule be uiris
-	totalInVouchers := sdk.NewCoins(amount).Add(fee)
+	totalInVouchers := sdk.NewCoins(amount)
+	fees := sdk.NewCoins(fee)
 
 	// send coins to module in prep for burn
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, totalInVouchers); err != nil {
+		return 0, err
+	}
+
+	// send fees to module in prep for distribution
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sender, types.FeeCollectorName, fees); err != nil {
 		return 0, err
 	}
 
