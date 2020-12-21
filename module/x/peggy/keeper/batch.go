@@ -131,6 +131,7 @@ func (k Keeper) CancelOutgoingTXBatch(ctx sdk.Context, tokenContract string, non
 	}
 	for _, tx := range batch.Transactions {
 		tx.Erc20Fee.Contract = tokenContract
+		//TODO refund coin
 		k.prependToUnbatchedTXIndex(ctx, tx.Erc20Fee.PeggyCoin(), tx.Id)
 	}
 

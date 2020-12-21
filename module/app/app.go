@@ -141,6 +141,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		peggytypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
+		peggytypes.FeeCollectorName:    {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens

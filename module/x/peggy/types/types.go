@@ -169,3 +169,20 @@ func (v *Valset) WithoutEmptyMembers() *Valset {
 	}
 	return &r
 }
+
+// MapValsetWithTotalPower returns a map Valset and totoal power
+func (v *Valset) MapValsetWithTotalPower() (map[string]*BridgeValidator, uint64) {
+	mbv := make(map[string]*BridgeValidator, len(v.Members))
+	if v == nil {
+		return mbv, 0
+	}
+
+	var totalPower = uint64(0)
+	for i := range v.Members {
+		if err := v.Members[i].ValidateBasic(); err == nil {
+			mbv[v.Members[i].EthereumAddress] = v.Members[i]
+			totalPower += v.Members[i].Power
+		}
+	}
+	return mbv, totalPower
+}
