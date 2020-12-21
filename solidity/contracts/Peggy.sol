@@ -258,7 +258,7 @@ contract Peggy {
 		uint256[] memory _amounts,
 		address[] memory _destinations,
 		uint256 _batchNonce,
-		address[] _tokenContract
+		address[] memory _tokenContract
 	) public {
 		// CHECKS scoped to reduce stack depth
 		{
@@ -288,6 +288,15 @@ contract Peggy {
 				"Malformed batch of transactions"
 			);
 
+			for (uint256 i = 0; i < _tokenContract.length; i++) {
+				address _tokenContractAddr = _tokenContract[i];
+				// Check that the batch nonce is higher than the last nonce for this token
+				require(
+					state_lastBatchNonces[_tokenContractAddr] < _batchNonce,
+					"New batch nonce must be greater than the current nonce"
+				);
+			}
+
 			// Check that enough current validators have signed off on the transaction batch and valset
 			checkValidatorSignatures(
 				_currentValidators,
@@ -313,13 +322,7 @@ contract Peggy {
 			// ACTIONS
 			{
 				for (uint256 i = 0; i < _amounts.length; i++) {
-					_tokenContractAddr = _tokenContract[i]
-					// Check that the batch nonce is higher than the last nonce for this token
-					require(
-						state_lastBatchNonces[_tokenContractAddr] < _batchNonce,
-						"New batch nonce must be greater than the current nonce"
-					);
-
+					address _tokenContractAddr = _tokenContract[i];
 					// Store batch nonce
 					state_lastBatchNonces[_tokenContractAddr] = _batchNonce;
 
