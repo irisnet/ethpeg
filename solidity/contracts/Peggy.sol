@@ -26,7 +26,7 @@ contract Peggy {
 	// module. It is purely for the use of relayers to allow them to successfully submit batches.
 	event TransactionBatchExecutedEvent(
 		uint256 indexed _batchNonce,
-		address indexed _token,
+		address[] indexed _token,
 		uint256 _eventNonce
 	);
 	event SendToCosmosEvent(
@@ -257,9 +257,8 @@ contract Peggy {
 		// The batch of transactions
 		uint256[] memory _amounts,
 		address[] memory _destinations,
-		uint256[] memory _fees,
 		uint256 _batchNonce,
-		address _tokenContract
+		address[] memory _tokenContract
 	) public {
 		// CHECKS scoped to reduce stack depth
 		{
@@ -285,15 +284,18 @@ contract Peggy {
 
 			// Check that the transaction batch is well-formed
 			require(
-				_amounts.length == _destinations.length && _amounts.length == _fees.length,
+				_amounts.length == _destinations.length && _amounts.length == _tokenContract.length,
 				"Malformed batch of transactions"
 			);
 
-			// Check that the batch nonce is higher than the last nonce for this token
-			require(
-				state_lastBatchNonces[_tokenContract] < _batchNonce,
-				"New batch nonce must be greater than the current nonce"
-			);
+			for (uint256 i = 0; i < _tokenContract.length; i++) {
+				address _tokenContractAddr = _tokenContract[i];
+				// Check that the batch nonce is higher than the last nonce for this token
+				require(
+					state_lastBatchNonces[_tokenContractAddr] < _batchNonce,
+					"New batch nonce must be greater than the current nonce"
+				);
+			}
 
 			// Check that enough current validators have signed off on the transaction batch and valset
 			checkValidatorSignatures(
@@ -310,7 +312,6 @@ contract Peggy {
 						0x7472616e73616374696f6e426174636800000000000000000000000000000000,
 						_amounts,
 						_destinations,
-						_fees,
 						_batchNonce,
 						_tokenContract
 					)
@@ -319,20 +320,14 @@ contract Peggy {
 			);
 
 			// ACTIONS
-
-			// Store batch nonce
-			state_lastBatchNonces[_tokenContract] = _batchNonce;
-
 			{
-				// Send transaction amounts to destinations
-				uint256 totalFee;
 				for (uint256 i = 0; i < _amounts.length; i++) {
-					IERC20(_tokenContract).safeTransfer(_destinations[i], _amounts[i]);
-					totalFee = totalFee.add(_fees[i]);
-				}
+					address _tokenContractAddr = _tokenContract[i];
+					// Store batch nonce
+					state_lastBatchNonces[_tokenContractAddr] = _batchNonce;
 
-				// Send transaction fees to msg.sender
-				IERC20(_tokenContract).safeTransfer(msg.sender, totalFee);
+					IERC20(_tokenContractAddr).safeTransfer(_destinations[i], _amounts[i]);
+				}
 			}
 		}
 

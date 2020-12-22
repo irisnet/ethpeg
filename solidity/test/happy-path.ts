@@ -9,6 +9,7 @@ import {
   signHash,
   examplePowers
 } from "../test-utils/pure";
+import { string } from "@nomiclabs/buidler/internal/core/params/argumentTypes";
 
 chai.use(solidity);
 const { expect } = chai;
@@ -102,10 +103,12 @@ describe("Peggy happy path with combination method", function () {
     const txDestinationsInt = new Array(numTxs);
     const txFees = new Array(numTxs);
     const txAmounts = new Array(numTxs);
+    const tokenContractAddrs = new Array(numTxs);
     for (let i = 0; i < numTxs; i++) {
       txFees[i] = 1;
       txAmounts[i] = 1;
       txDestinationsInt[i] = signers[i + 5];
+      tokenContractAddrs[i] = testERC20.address;
     }
 
     const txDestinations = await getSignerAddresses(txDestinationsInt);
@@ -122,18 +125,16 @@ describe("Peggy happy path with combination method", function () {
         "bytes32",
         "uint256[]",
         "address[]",
-        "uint256[]",
         "uint256",
-        "address"
+        "address[]"
       ],
       [
         peggyId,
         methodName,
         txAmounts,
         txDestinations,
-        txFees,
         batchNonce,
-        testERC20.address
+        tokenContractAddrs
       ]
     );
 
@@ -157,9 +158,8 @@ describe("Peggy happy path with combination method", function () {
 
       txAmounts,
       txDestinations,
-      txFees,
       1,
-      testERC20.address
+      tokenContractAddrs
     );
 
     // expect(await peggy.functions.state_lastValsetCheckpoint()).to.equal(checkpoint2);

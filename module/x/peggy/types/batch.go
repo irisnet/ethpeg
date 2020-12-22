@@ -38,11 +38,11 @@ func (b OutgoingTxBatch) GetCheckpoint(peggyIDstring string) ([]byte, error) {
 	// Run through the elements of the batch and serialize them
 	txAmounts := make([]*big.Int, len(b.Transactions))
 	txDestinations := make([]gethcommon.Address, len(b.Transactions))
-	txFees := make([]*big.Int, len(b.Transactions))
+	tokenContracts := make([]gethcommon.Address, len(b.Transactions))
 	for i, tx := range b.Transactions {
 		txAmounts[i] = tx.Erc20Token.Amount.BigInt()
 		txDestinations[i] = gethcommon.HexToAddress(tx.DestAddress)
-		txFees[i] = tx.Erc20Fee.Amount.BigInt()
+		tokenContracts[i] = gethcommon.HexToAddress(tx.Erc20Fee.Contract)
 	}
 
 	// the methodName needs to be the same as the 'name' above in the checkpointAbiJson
@@ -53,9 +53,8 @@ func (b OutgoingTxBatch) GetCheckpoint(peggyIDstring string) ([]byte, error) {
 		batchMethodName,
 		txAmounts,
 		txDestinations,
-		txFees,
 		big.NewInt(int64(b.BatchNonce)),
-		gethcommon.HexToAddress(b.TokenContract),
+		tokenContracts,
 	)
 
 	// this should never happen outside of test since any case that could crash on encoding

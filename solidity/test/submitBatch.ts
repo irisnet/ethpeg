@@ -62,18 +62,18 @@ async function runTest(opts: {
   // ===============================
   const numTxs = 100;
   const txDestinationsInt = new Array(numTxs);
-  const txFees = new Array(numTxs);
 
   const txAmounts = new Array(numTxs);
+  const tokenContractAddrs = new Array(numTxs);
   for (let i = 0; i < numTxs; i++) {
-    txFees[i] = 1;
     txAmounts[i] = 1;
     txDestinationsInt[i] = signers[i + 5];
+    tokenContractAddrs[i] = testERC20.address;
   }
   const txDestinations = await getSignerAddresses(txDestinationsInt);
   if (opts.malformedTxBatch) {
-    // Make the fees array the wrong size
-    txFees.pop();
+    // Make the tokenContractAddrs array the wrong size
+    tokenContractAddrs.pop();
   }
 
   let batchNonce = 1
@@ -93,18 +93,16 @@ async function runTest(opts: {
       "bytes32",
       "uint256[]",
       "address[]",
-      "uint256[]",
       "uint256",
-      "address"
+      "address[]"
     ],
     [
       peggyId,
       methodName,
       txAmounts,
       txDestinations,
-      txFees,
       batchNonce,
-      testERC20.address
+      tokenContractAddrs
     ]
   );
   let digest = ethers.utils.keccak256(abiEncoded);
@@ -167,9 +165,8 @@ async function runTest(opts: {
 
     txAmounts,
     txDestinations,
-    txFees,
     batchNonce,
-    testERC20.address
+    tokenContractAddrs
   );
 }
 
@@ -246,9 +243,9 @@ describe("submitBatch Go test hash", function () {
     // Prepare batch
     // ===============================
     const txAmounts = [1]
-    const txFees = [1]
     const txDestinations = await getSignerAddresses([signers[5]]);
     const batchNonce = 1
+    const tokenContractAddrs = [testERC20.address]
 
 
 
@@ -274,18 +271,16 @@ describe("submitBatch Go test hash", function () {
         "bytes32",
         "uint256[]",
         "address[]",
-        "uint256[]",
         "uint256",
-        "address"
+        "address[]"
       ],
       [
         peggyId,
         batchMethodName,
         txAmounts,
         txDestinations,
-        txFees,
         batchNonce,
-        testERC20.address
+        tokenContractAddrs
       ]
     );
     const batchDigest = ethers.utils.keccak256(abiEncodedBatch);
@@ -295,9 +290,8 @@ describe("submitBatch Go test hash", function () {
       "batchMethodName": batchMethodName,
       "txAmounts": txAmounts,
       "txDestinations": txDestinations,
-      "txFees": txFees,
       "batchNonce": batchNonce,
-      "tokenContract": testERC20.address
+      "tokenContract": tokenContractAddrs
     })
     console.log("abiEncodedBatch:", abiEncodedBatch)
     console.log("batchDigest:", batchDigest)
@@ -317,9 +311,8 @@ describe("submitBatch Go test hash", function () {
 
       txAmounts,
       txDestinations,
-      txFees,
       batchNonce,
-      testERC20.address
+      tokenContractAddrs
     );
   });
 })
