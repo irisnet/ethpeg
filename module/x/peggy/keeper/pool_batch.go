@@ -88,18 +88,18 @@ func (k Keeper) PushToOutgoingPool(ctx sdk.Context,
 // - select available transactions from the outgoing transaction pool sorted by fee desc
 // - persist an outgoing batch object with an incrementing ID = nonce
 // - emit an event
-func (k Keeper) BuildTxBatch(ctx sdk.Context, maxBatchNum int) (uint64, error) {
+func (k Keeper) BuildTxBatch(ctx sdk.Context, maxBatchNum int) (uint64, uint64, error) {
 	if maxBatchNum == 0 {
-		return 0, sdkerrors.Wrap(types.ErrInvalid, "max elements value")
+		return 0, 0, sdkerrors.Wrap(types.ErrInvalid, "max elements value")
 	}
 	// TODO: figure out how to check for know or unknown denoms? this might not matter anymore
 	selectedTx, err := k.pickUnbatchedTx(ctx, maxBatchNum)
 	if len(selectedTx) == 0 || err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 
 	if err := k.decrUnbatchedTxCnt(ctx, uint64(len(selectedTx))); err != nil {
-		return 0, sdkerrors.Wrap(types.ErrInternal, err.Error())
+		return 0, 0, sdkerrors.Wrap(types.ErrInternal, err.Error())
 	}
 
 	nextID := k.autoIncrementID(ctx, types.KeyLastOutgoingBatchID)
@@ -121,7 +121,7 @@ func (k Keeper) BuildTxBatch(ctx sdk.Context, maxBatchNum int) (uint64, error) {
 		sdk.NewAttribute(types.AttributeKeyNonce, fmt.Sprint(nextID)),
 	)
 	ctx.EventManager().EmitEvent(batchEvent)
-	return batch.BatchNonce, nil
+	return batch.BatchNonce, uint64(len(selectedTx)), nil
 }
 
 // IteratePoolTxByFee itetates over the outgoing pool which is sorted by fee

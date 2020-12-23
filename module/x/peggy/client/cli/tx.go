@@ -12,6 +12,7 @@ import (
 
 	"github.com/althea-net/peggy/module/x/peggy/types"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -55,7 +56,7 @@ func GetUnsafeTestingCmd() *cobra.Command {
 
 // GetCmdUpdateEthAddress updates the network about the eth address that you have on record.
 func CmdUpdateEthAddress() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "update-eth-addr [eth_private_key]",
 		Short: "Update your Ethereum address which will be used for signing executables for the `multisig set`",
 		Args:  cobra.ExactArgs(1),
@@ -97,6 +98,8 @@ func CmdUpdateEthAddress() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(cliCtx, cmd.Flags(), msg)
 		},
 	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }
 
 func CmdValsetRequest() *cobra.Command {

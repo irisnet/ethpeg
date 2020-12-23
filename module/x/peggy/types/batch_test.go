@@ -41,7 +41,7 @@ func TestOutgoingTxBatchCheckpointGold1(t *testing.T) {
 	require.NoError(t, err)
 
 	// hash from bridge contract
-	goldHash := "0x731fc6e7e13e4c4bd45664c9272d49e5a9b55bccb54cfcc0704465f9de491e86"[2:]
+	goldHash := "0x0a136946eb30ed7b24963c464d817de75e997315e12e2bc99347a8db727269f9"[2:]
 	assert.Equal(t, goldHash, hex.EncodeToString(ourHash))
 }
 

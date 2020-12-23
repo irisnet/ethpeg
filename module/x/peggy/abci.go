@@ -15,28 +15,35 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	// make tx batch from unbatched tx pool
 	unBatchedTxCnt := k.GetUnbatchedTxCnt(ctx)
 	if (ctx.BlockHeight()%int64(param.BatchInterval) == 0) || (unBatchedTxCnt >= batchNum) {
-		batchID, err := k.BuildTxBatch(ctx, int(batchNum))
+		batchID, batchedTxNum, err := k.BuildTxBatch(ctx, int(batchNum))
 		if err != nil {
 			logger.Error("build tx batch from pool failed", "err", err.Error())
 			return
 		}
 		logger.Info("Build tx batch",
-			"batchInterval", param.BatchInterval, "batchID", batchID,
-			"unBatchedTxCnt", unBatchedTxCnt, "batchNum", batchNum,
+			"batchInterval", param.BatchInterval,
+			"batchID", batchID,
+			"unBatchedTxCnt", unBatchedTxCnt,
+			"batchNum", batchNum,
+			"batchedTxNum", batchedTxNum,
 		)
 	}
 
 	// update valset
 
-	// get valset at current heigth
+	// get valset at current height
 	currentValset := k.GetCurrentValset(ctx)
-	// get the last saved valset
-	latestValset := k.GetLatestValset(ctx)
-	if latestValset == nil {
-		latestValset = currentValset
+	currentValsetMap, currentTotalPower := currentValset.MapValsetWithTotalPower()
+	if currentTotalPower == 0 {
+		logger.Debug("No valid orchestrator", "currentValset", currentValset)
+		return
 	}
 
-	currentValsetMap, currentTotalPower := currentValset.MapValsetWithTotalPower()
+	// get the last saved valset
+	latestValset := k.GetLatestValset(ctx)
+	if latestValset == nil || len(latestValset.Members) == 0 {
+		latestValset = currentValset
+	}
 
 	//the power of the last validator set in current validator set
 	latestTotalPower := uint64(0)
@@ -54,11 +61,16 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 	}
 
 	valsetChangePower := sdk.NewIntFromUint64(diffPower)
-	valsetChangeThreshold := sdk.NewIntFromUint64(currentTotalPower).Mul(sdk.NewIntFromUint64(param.ValsetChange)).Quo(sdk.NewInt(100))
-	if valsetChangePower.GTE(valsetChangeThreshold) || ctx.BlockHeight()%int64(param.ValsetInterval) == 0 {
+	valsetChangeThreshold := sdk.NewIntFromUint64(currentTotalPower).
+		Mul(sdk.NewIntFromUint64(param.ValsetChange)).Quo(sdk.NewInt(100))
+	if valsetChangePower.GTE(valsetChangeThreshold) ||
+		ctx.BlockHeight()%int64(param.ValsetInterval) == 0 {
 		logger.Info("Update valset",
-			"diffPower", diffPower, "valsetChangeThreshold", valsetChangeThreshold,
+			"diffPower", diffPower,
+			"valsetChangeThreshold", valsetChangeThreshold,
 			"valsetInterval", param.ValsetInterval,
+			"valsetChange", param.ValsetChange,
+			"currentTotalPower", currentTotalPower,
 		)
 		k.StoreValset(ctx, latestValset)
 	}

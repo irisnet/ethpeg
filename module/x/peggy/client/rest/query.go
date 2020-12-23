@@ -178,8 +178,7 @@ func currentValsetHandler(cliCtx client.Context, storeName string) http.HandlerF
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		var out types.Valset
-		cliCtx.JSONMarshaler.MustUnmarshalJSON(res, &out)
-		rest.PostProcessResponse(w, cliCtx.WithHeight(height), res)
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, res)
 	}
 }
