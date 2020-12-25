@@ -474,6 +474,7 @@ func NewPeggyApp(
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
+		peggytypes.ModuleName,
 	)
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,

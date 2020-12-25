@@ -65,7 +65,7 @@ func TestBuildTxBatch(t *testing.T) {
 	k, ctx, keepers := CreateTestEnv(t)
 
 	pushToOutgoingPool(t, ctx, k, keepers)
-	batchID, err := k.BuildTxBatch(ctx, 5)
+	batchID, _, err := k.BuildTxBatch(ctx, 5)
 	assert.NoError(t, err)
 
 	txBatch := k.GetTxBatch(ctx, batchID)

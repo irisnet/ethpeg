@@ -30,6 +30,11 @@ type Keeper struct {
 
 // NewKeeper returns a new instance of the peggy keeper
 func NewKeeper(cdc codec.BinaryMarshaler, storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, stakingKeeper types.StakingKeeper, bankKeeper types.BankKeeper) Keeper {
+	// set KeyTable if it has not already been set
+	if !paramSpace.HasKeyTable() {
+		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
+	}
+
 	k := Keeper{
 		cdc:           cdc,
 		paramSpace:    paramSpace,
@@ -41,12 +46,6 @@ func NewKeeper(cdc codec.BinaryMarshaler, storeKey sdk.StoreKey, paramSpace para
 		keeper:     k,
 		bankKeeper: bankKeeper,
 	}
-
-	// set KeyTable if it has not already been set
-	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
-	}
-
 	return k
 }
 
@@ -277,9 +276,8 @@ func (k Keeper) GetCurrentValset(ctx sdk.Context) *types.Valset {
 /////////////////////////////
 
 // GetParams returns the parameters from the store
-func (k Keeper) GetParams(ctx sdk.Context) *types.Params {
-	var p *types.Params
-	k.paramSpace.GetParamSet(ctx, p)
+func (k Keeper) GetParams(ctx sdk.Context) (p types.Params) {
+	k.paramSpace.GetParamSet(ctx, &p)
 	return p
 }
 

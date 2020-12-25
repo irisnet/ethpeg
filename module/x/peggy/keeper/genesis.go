@@ -10,7 +10,8 @@ func InitGenesis(ctx sdk.Context, keeper Keeper, data types.GenesisState) {
 }
 
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
+	params := k.GetParams(ctx)
 	return types.GenesisState{
-		Params: k.GetParams(ctx),
+		Params: &params,
 	}
 }

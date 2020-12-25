@@ -91,7 +91,7 @@ pub async fn check_for_events(
             // todo get eth chain id from the chain
             let res =
                 send_ethereum_claims(contact, our_private_key, deposits, withdraws, fee).await?;
-            trace!("Sent in Oracle claims response: {:?}", res);
+                info!("Sent in Oracle claims response: {:?}", res);
         }
         Ok(latest_block)
     } else {

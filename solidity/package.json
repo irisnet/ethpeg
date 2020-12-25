@@ -17,14 +17,16 @@
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.13.5",
+    "axios": "0.20.0",
     "buidler-gas-reporter": "^0.1.3",
     "chai": "^4.2.0",
     "ethereum-waffle": "^2.5.0",
     "ethers": "^4.0.47",
+    "mocha": "^5.2.0",
+    "scrypt.js": "0.3.0",
     "ts-node": "^8.10.1",
     "typechain": "^1.0.5",
-    "typescript": "^3.8.3",
-    "axios": "0.20.0"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^3.0.1",

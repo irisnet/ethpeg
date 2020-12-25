@@ -12,13 +12,14 @@ func (k Keeper) StoreValset(ctx sdk.Context, valset *types.Valset) {
 }
 
 // GetLatestValset save valset
-func (k Keeper) GetLatestValset(ctx sdk.Context) (valset *types.Valset) {
+func (k Keeper) GetLatestValset(ctx sdk.Context) *types.Valset {
+	var valset types.Valset
 	prefixStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.ValsetRequestKey)
 	iter := prefixStore.ReverseIterator(nil, nil)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), valset)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &valset)
 		break
 	}
-	return
+	return &valset
 }
