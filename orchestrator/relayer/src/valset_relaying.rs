@@ -37,6 +37,7 @@ pub async fn relay_valsets(
     let mut latest_confirmed = None;
     let mut latest_valset = None;
     for set in latest_valsets {
+        info!("Get all valset confirms by nonce {}",set.nonce);
         let confirms = get_all_valset_confirms(grpc_client, set.nonce).await;
         if let Ok(confirms) = confirms {
             // todo allow submission without signatures from all validators

@@ -25,6 +25,7 @@ module.exports = {
   },
   networks: {
     buidlerevm: {
+      blockGasLimit: 5000000,
       accounts: [
         {
           privateKey:

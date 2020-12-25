@@ -72,6 +72,6 @@ func EndBlocker(ctx sdk.Context, k keeper.Keeper) {
 			"valsetChange", param.ValsetChange,
 			"currentTotalPower", currentTotalPower,
 		)
-		k.StoreValset(ctx, latestValset)
+		k.StoreValset(ctx, currentValset)
 	}
 }

@@ -45,7 +45,7 @@ pub async fn orchestrator_main_loop(
 ) {
     let fee = Coin {
         denom: pay_fees_in.clone(),
-        amount: 1u32.into(),
+        amount: 3u32.into(),
     };
 
     let a = eth_oracle_main_loop(

@@ -1,12 +1,12 @@
 use clarity::abi::Token;
 use clarity::Uint256;
-use clarity::{abi::encode_tokens, Address as EthAddress};
+use clarity::{abi::encode_tokens,abi::encode_call, Address as EthAddress};
 use deep_space::address::Address as CosmosAddress;
 use peggy_utils::error::PeggyError;
 use peggy_utils::types::*;
 use sha3::{Digest, Keccak256};
 use std::u64::MAX as U64MAX;
-use web30::{client::Web3, jsonrpc::error::Web3Error};
+use web30::{client::Web3, jsonrpc::error::Web3Error, types::Data, types::TransactionRequest,types::UnpaddedHex};
 
 pub fn get_correct_sig_for_address(
     address: CosmosAddress,
@@ -79,8 +79,8 @@ pub async fn get_valset_nonce(
     caller_address: EthAddress,
     web3: &Web3,
 ) -> Result<u64, Web3Error> {
-    let val = web3
-        .contract_call(
+    let val = contract_call(
+            web3,
             contract_address,
             "state_lastValsetNonce()",
             &[],
@@ -103,8 +103,7 @@ pub async fn get_tx_batch_nonce(
     caller_address: EthAddress,
     web3: &Web3,
 ) -> Result<u64, Web3Error> {
-    let val = web3
-        .contract_call(
+    let val = contract_call(web3,
             peggy_contract_address,
             "lastBatchNonce(address)",
             &[erc20_contract_address.into()],
@@ -126,8 +125,7 @@ pub async fn get_peggy_id(
     caller_address: EthAddress,
     web3: &Web3,
 ) -> Result<Vec<u8>, Web3Error> {
-    let val = web3
-        .contract_call(contract_address, "state_peggyId()", &[], caller_address)
+    let val = contract_call(web3,contract_address, "state_peggyId()", &[], caller_address)
         .await?;
     Ok(val)
 }
@@ -138,10 +136,43 @@ pub async fn get_erc20_symbol(
     caller_address: EthAddress,
     web3: &Web3,
 ) -> Result<String, PeggyError> {
-    let val_symbol = web3
-        .contract_call(contract_address, "symbol()", &[], caller_address)
+    let val_symbol = contract_call(web3,contract_address, "symbol()", &[], caller_address)
         .await?;
     // Pardon the unwrap, but this is temporary code, intended only for the tests, to help them
     // deal with a deprecated feature (the symbol), which will be removed soon
     Ok(String::from_utf8(val_symbol).unwrap())
+}
+
+pub async fn contract_call(
+    web3: &Web3,
+    contract_address: EthAddress,
+    sig: &str,
+    tokens: &[Token],
+    own_address: EthAddress,
+) -> Result<Vec<u8>, Web3Error> {
+    //let our_balance = web3.eth_get_balance(own_address).await?;
+    let nonce = web3.eth_get_transaction_count(own_address).await?;
+
+    let payload = encode_call(sig, tokens)?;
+
+    let gas_price: Uint256 = 1u8.into();
+    // Geth represents gas as a u64 it will truncate leading zeros but not take
+    // a value larger than u64::MAX, likewise the command will fail if we can't
+    // actually pay that fee. This operation maximizes the info we can get
+    let gas_limit = 2000000;
+    let transaction = TransactionRequest {
+        from: Some(own_address),
+        to: contract_address,
+        nonce: Some(UnpaddedHex(nonce)),
+        gas: Some(gas_limit.into()),
+        gas_price: Some(UnpaddedHex(gas_price)),
+        value: Some(UnpaddedHex(0u64.into())),
+        data: Some(Data(payload)),
+    };
+
+    let bytes = match web3.eth_call(transaction).await {
+        Ok(val) => val,
+        Err(e) => return Err(e),
+    };
+    Ok(bytes.0)
 }
