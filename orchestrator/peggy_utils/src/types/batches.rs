@@ -46,18 +46,18 @@ impl TransactionBatch {
     pub fn get_checkpoint_values(&self) -> (Token, Token, Token) {
         let mut amounts = Vec::new();
         let mut destinations = Vec::new();
-        let mut fees = Vec::new();
+        let mut token_contracts = Vec::new();
         for item in self.transactions.iter() {
             amounts.push(Token::Uint(item.erc20_token.amount.clone()));
-            fees.push(Token::Uint(item.erc20_fee.amount.clone()));
+            token_contracts.push(item.erc20_token.token_contract_address.clone());
             destinations.push(item.destination)
         }
         assert_eq!(amounts.len(), destinations.len());
-        assert_eq!(fees.len(), destinations.len());
+        assert_eq!(token_contracts.len(), destinations.len());
         (
             Token::Dynamic(amounts),
             destinations.into(),
-            Token::Dynamic(fees),
+            token_contracts.into(),
         )
     }
 
