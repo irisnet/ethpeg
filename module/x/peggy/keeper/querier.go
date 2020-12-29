@@ -131,7 +131,7 @@ func queryAllBatchConfirms(ctx sdk.Context, nonceStr string, tokenContract strin
 	}
 
 	var confirms []types.MsgConfirmBatch
-	keeper.IterateBatchConfirmByNonceAndTokenContract(ctx, nonce, tokenContract, func(_ []byte, c types.MsgConfirmBatch) bool {
+	keeper.IterateBatchConfirmByNonceAndTokenContract(ctx, nonce, func(_ []byte, c types.MsgConfirmBatch) bool {
 		confirms = append(confirms, c)
 		return false
 	})
