@@ -244,7 +244,7 @@ contract Peggy {
 		uint256[] memory _amounts,
 		address[] memory _destinations,
 		uint256 _batchNonce,
-		address[] memory _tokenContract
+		address[] memory _tokenContracts
 	) public {
 		// CHECKS scoped to reduce stack depth
 		{
@@ -270,7 +270,8 @@ contract Peggy {
 
 			// Check that the transaction batch is well-formed
 			require(
-				_amounts.length == _destinations.length && _amounts.length == _tokenContract.length,
+				_amounts.length == _destinations.length &&
+					_amounts.length == _tokenContracts.length,
 				"Malformed batch of transactions"
 			);
 
@@ -296,7 +297,7 @@ contract Peggy {
 						_amounts,
 						_destinations,
 						_batchNonce,
-						_tokenContract
+						_tokenContracts
 					)
 				),
 				state_powerThreshold
@@ -305,10 +306,7 @@ contract Peggy {
 			// ACTIONS
 			{
 				for (uint256 i = 0; i < _amounts.length; i++) {
-					address _tokenContractAddr = _tokenContract[i];
-					// Store batch nonce
-					state_lastBatchNonce = _batchNonce;
-
+					address _tokenContractAddr = _tokenContracts[i];
 					IERC20(_tokenContractAddr).safeTransfer(_destinations[i], _amounts[i]);
 				}
 			}
@@ -316,6 +314,8 @@ contract Peggy {
 
 		// LOGS scoped to reduce stack depth
 		{
+			// Store batch nonce
+			state_lastBatchNonce = _batchNonce;
 			state_lastEventNonce = state_lastEventNonce.add(1);
 			emit TransactionBatchExecutedEvent(_batchNonce, state_lastEventNonce);
 		}
