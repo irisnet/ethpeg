@@ -32,7 +32,7 @@ pub async fn relay_batches(
         return;
     }
     let latest_batches = latest_batches.unwrap();
-    info!("Got latest batches {:?}",latest_batches);
+    debug!("Got latest batches {:?}",latest_batches);
 
     let latest_ethereum_valset =
             get_valset_nonce(peggy_contract_address, our_ethereum_address, web3)
@@ -74,8 +74,8 @@ pub async fn relay_batches(
         )
         .await
         .expect("Failed to get batch nonce from Ethereum");
-        
-        info!("Get latest_ethereum_batch{},latest_cosmos_batch_nonce {} ",latest_ethereum_batch,latest_cosmos_batch_nonce); 
+
+        debug!("Get latest_ethereum_batch{},latest_cosmos_batch_nonce {} ",latest_ethereum_batch,latest_cosmos_batch_nonce); 
         
         if latest_cosmos_batch_nonce > latest_ethereum_batch {
             info!(

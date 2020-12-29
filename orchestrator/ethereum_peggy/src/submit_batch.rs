@@ -27,7 +27,7 @@ pub async fn send_eth_transaction_batch(
         "Ordering signatures and submitting TransacqtionBatch {} to Ethereum",
         new_batch_nonce
     );
-    info!("Batch {:?}", batch);
+    debug!("Batch {:?}", batch);
 
     let sig_data = current_valset.order_batch_sigs(confirms)?;
     let sig_arrays = to_arrays(sig_data);
@@ -63,7 +63,7 @@ pub async fn send_eth_transaction_batch(
     ];
     let payload = clarity::abi::encode_call("submitBatch(address[],uint256[],uint256,uint8[],bytes32[],bytes32[],uint256[],address[],uint256,address[])",
     tokens).unwrap();
-    info!("Tokens {:?}", tokens);
+    debug!("Tokens {:?}", tokens);
 
     let before_nonce = get_tx_batch_nonce(
         peggy_contract_address,
