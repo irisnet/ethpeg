@@ -74,3 +74,16 @@ func TestValidateMsgSetEthAddress(t *testing.T) {
 	}
 
 }
+
+func TestValidateSendToEthMsg(t *testing.T) {
+	coinStr := "1peggy/0x7c2C195CD6D34B8F845992d380aADB2730bB9C6F"
+	coin, err := sdk.ParseCoin(coinStr)
+	assert.NoError(t, err)
+
+	sender, _ := sdk.AccAddressFromBech32("cosmos1pzs4v88qj6u7ar3rh0g8jwtf3ngz9jjvud9jre")
+	destAddress := "0xc783df8a850f42e7f7e57013759c285caa701eb6"
+
+	fee := sdk.NewInt64Coin("stake", 3)
+	msg := NewMsgSendToEth(sender, destAddress, coin, fee)
+	assert.NoError(t, msg.ValidateBasic())
+}

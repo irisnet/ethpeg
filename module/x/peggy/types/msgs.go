@@ -170,18 +170,12 @@ func (msg MsgSendToEth) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender)
 	}
-	aCoin, err := ERC20FromPeggyCoin(msg.Amount)
+
+	_, err := ERC20FromPeggyCoin(msg.Amount)
 	if err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("amount %#v is not a voucher type", msg))
 	}
-	fCoin, err := ERC20FromPeggyCoin(msg.BridgeFee)
-	if err != nil {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("fee %#vs is not a voucher type", msg))
-	}
-	// fee and send must be of the same denom
-	if aCoin.Contract != fCoin.Contract {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, fmt.Sprintf("fee and amount must be the same type %s != %s", aCoin.Contract, fCoin.Contract))
-	}
+
 	if !msg.Amount.IsValid() || msg.Amount.IsZero() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, "amount")
 	}
@@ -262,9 +256,6 @@ func (msg MsgConfirmBatch) ValidateBasic() error {
 	}
 	if err := ValidateEthAddress(msg.EthSigner); err != nil {
 		return sdkerrors.Wrap(err, "eth signer")
-	}
-	if err := ValidateEthAddress(msg.TokenContract); err != nil {
-		return sdkerrors.Wrap(err, "token contract")
 	}
 	_, err := hex.DecodeString(msg.Signature)
 	if err != nil {
@@ -369,9 +360,6 @@ func (e *MsgWithdrawClaim) ValidateBasic() error {
 	if e.BatchNonce == 0 {
 		return fmt.Errorf("batch_nonce == 0")
 	}
-	if err := ValidateEthAddress(e.TokenContract); err != nil {
-		return sdkerrors.Wrap(err, "erc20 token")
-	}
 	if _, err := sdk.AccAddressFromBech32(e.Orchestrator); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, e.Orchestrator)
 	}
@@ -380,7 +368,7 @@ func (e *MsgWithdrawClaim) ValidateBasic() error {
 
 // Hash implements WithdrawBatch.Hash
 func (b *MsgWithdrawClaim) ClaimHash() []byte {
-	path := fmt.Sprintf("%s/%d/", b.TokenContract, b.BatchNonce)
+	path := fmt.Sprintf("%s/%d/", "WithdrawClaim", b.BatchNonce)
 	return tmhash.Sum([]byte(path))
 }
 

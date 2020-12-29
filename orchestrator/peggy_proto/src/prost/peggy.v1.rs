@@ -83,7 +83,7 @@ pub struct OutgoingTransferTx {
     #[prost(message, optional, tag="4")]
     pub erc20_token: ::std::option::Option<Erc20Token>,
     #[prost(message, optional, tag="5")]
-    pub erc20_fee: ::std::option::Option<Erc20Token>,
+    pub fee: ::std::option::Option<cosmos_sdk_proto::cosmos::base::v1beta1::Coin>,
 }
 /// SignType defines messages that have been signed by an orchestrator
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -273,12 +273,10 @@ pub struct MsgConfirmBatch {
     #[prost(uint64, tag="1")]
     pub nonce: u64,
     #[prost(string, tag="2")]
-    pub token_contract: std::string::String,
-    #[prost(string, tag="3")]
     pub eth_signer: std::string::String,
-    #[prost(string, tag="4")]
+    #[prost(string, tag="3")]
     pub validator: std::string::String,
-    #[prost(string, tag="5")]
+    #[prost(string, tag="4")]
     pub signature: std::string::String,
 }
 /// TODO: write response data here

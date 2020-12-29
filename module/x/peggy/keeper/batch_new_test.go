@@ -1,8 +1,11 @@
 package keeper
 
 import (
+	"encoding/hex"
+	"fmt"
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -39,4 +42,9 @@ func TestTxBatchExecuted(t *testing.T) {
 	assert.Equal(t, 0, int(k.GetUnbatchedTxCnt(ctx)))
 	assert.Nil(t, k.GetTxBatch(ctx, nextBatchID))
 
+	addr, err := sdk.AccAddressFromBech32("cosmos1pzs4v88qj6u7ar3rh0g8jwtf3ngz9jjvud9jre")
+	assert.NoError(t, err)
+	fmt.Println("1111111")
+	fmt.Println(hex.EncodeToString(addr.Bytes()))
+	fmt.Println(len(addr.Bytes()))
 }

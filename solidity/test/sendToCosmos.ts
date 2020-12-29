@@ -4,7 +4,7 @@ import { solidity } from "ethereum-waffle";
 import fs from "fs";
 import { Peggy } from "../typechain/Peggy";
 import { TestERC20 } from "../typechain/TestERC20";
-
+import * as bech32 from "bech32";
 import { deployContracts } from "../test-utils";
 import {
   getSignerAddresses,
@@ -88,7 +88,7 @@ describe("transfer coin to cosmos tests", function () {
   const erc20ContractABI = "artifacts/ERC20.json"
   const peggyContractAddr = "0x8858eeB3DfffA017D4BCE9801D340D36Cf895CCf"
   const erc20ContractAddr = "0x7c2C195CD6D34B8F845992d380aADB2730bB9C6F"
-  const cosmosAddr = ethers.utils.formatBytes32String("myCosmosAddress")
+  const cosmosAddr = cosmosAddrToBytes32("cosmos1pzs4v88qj6u7ar3rh0g8jwtf3ngz9jjvud9jre")
 
   const provider = new ethers.providers.JsonRpcProvider(ethNode);
   let wallet = new ethers.Wallet(ethPrivkey, provider);
@@ -114,16 +114,31 @@ describe("transfer coin to cosmos tests", function () {
 
     let peggy = factory.attach(peggyContractAddr) as Peggy
 
-    let amount = "1"
+    let amount = "100"
     let resp = await peggy.sendToCosmos(erc20ContractAddr,
       cosmosAddr,
       amount,
       { gasLimit: 1000000 })
     console.log("sendToCosmos", resp)
   })
+
+  it("test cosmos addr convert to byte32", function () {
+    let cosmosAddr = "cosmos1pzs4v88qj6u7ar3rh0g8jwtf3ngz9jjvud9jre"
+    let ethAddr = cosmosAddrToBytes32(cosmosAddr)
+    console.log("addr:", ethAddr)
+  })
 });
 
 function getContractArtifacts(path: string): { bytecode: string; abi: string } {
   var { bytecode, abi } = JSON.parse(fs.readFileSync(path, "utf8").toString());
   return { bytecode, abi };
+}
+
+function cosmosAddrToBytes32(str: string) {
+  let ownKey = bech32.decode(str, 1023)
+  let cosmosAddr = bech32.fromWords(ownKey.words)
+  let err = "too long:" + cosmosAddr.length + "prefix:" + ownKey.prefix;
+  if (cosmosAddr.length > 31) { throw new Error(err); }
+  let padCosmosAddr = ethers.utils.padZeros(cosmosAddr, 32);
+  return ethers.utils.hexlify(padCosmosAddr);
 }

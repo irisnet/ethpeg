@@ -300,7 +300,7 @@ describe("submitBatch Go test hash", function () {
     const currentValsetNonce = 0;
 
 
-    await peggy.submitBatch(
+    let result = await peggy.submitBatch(
       await getSignerAddresses(validators),
       powers,
       currentValsetNonce,
@@ -314,5 +314,6 @@ describe("submitBatch Go test hash", function () {
       batchNonce,
       tokenContractAddrs
     );
+    console.log("result:", result)
   });
 })

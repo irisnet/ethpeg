@@ -163,7 +163,7 @@ func CmdUnsafeETHAddr() *cobra.Command {
 }
 
 func CmdWithdrawToETH() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "withdraw [from_key_or_cosmos_address] [to_eth_address] [amount] [bridge_fee]",
 		Short: "Adds a new entry to the transaction pool to withdraw an amount from the Ethereum bridge contract",
 		Args:  cobra.ExactArgs(4),
@@ -197,6 +197,8 @@ func CmdWithdrawToETH() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(cliCtx, cmd.Flags(), &msg)
 		},
 	}
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
 }
 
 func CmdRequestBatch() *cobra.Command {

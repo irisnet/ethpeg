@@ -91,7 +91,6 @@ pub struct RequestBatchMsg {
 pub struct ConfirmBatchMsg {
     pub nonce: Uint256,
     pub validator: Address,
-    pub token_contract: EthAddress,
     pub eth_signer: EthAddress,
     /// a hex encoded string representing the Ethereum signature
     #[serde(rename = "signature")]
@@ -129,7 +128,6 @@ impl EthereumBridgeDepositClaim {
 pub struct EthereumBridgeWithdrawBatchClaim {
     pub batch_nonce: Uint256,
     pub event_nonce: Uint256,
-    pub erc20_token: EthAddress,
 }
 
 impl EthereumBridgeWithdrawBatchClaim {
@@ -137,7 +135,6 @@ impl EthereumBridgeWithdrawBatchClaim {
         EthereumBridgeWithdrawBatchClaim {
             batch_nonce: input.batch_nonce,
             event_nonce: input.event_nonce,
-            erc20_token: input.erc20,
         }
     }
     // used for enum typing
@@ -185,7 +182,6 @@ pub struct CreateEthereumClaimsMsg {
 pub struct WithdrawClaimMsg {
     pub event_nonce: Uint256,
     pub batch_nonce: Uint256,
-    pub token_contract: EthAddress,
     pub orchestrator: Address,
 }
 
@@ -198,7 +194,6 @@ impl WithdrawClaimMsg {
             batch_nonce: downcast_nonce(input.batch_nonce)
                 .expect("Batch nonce overflow! Bridge halt!")
                 .into(),
-            token_contract: input.erc20,
             orchestrator: sender,
         }
     }
