@@ -24,14 +24,14 @@ pub async fn send_eth_transaction_batch(
     //assert!(new_valset_nonce > old_valset_nonce);
     let eth_address = our_eth_key.to_public_key().unwrap();
     info!(
-        "Ordering signatures and submitting TransacqtionBatch {}:{} to Ethereum",
-        batch.token_contract, new_batch_nonce
+        "Ordering signatures and submitting TransacqtionBatch {} to Ethereum",
+        new_batch_nonce
     );
-    info!("Batch {:?}", batch);
+    debug!("Batch {:?}", batch);
 
     let sig_data = current_valset.order_batch_sigs(confirms)?;
     let sig_arrays = to_arrays(sig_data);
-    let (amounts, destinations, fees) = batch.get_checkpoint_values();
+    let (amounts, destinations, token_contracts) = batch.get_checkpoint_values();
 
     // Solidity function signature
     // function submitBatch(
@@ -58,17 +58,15 @@ pub async fn send_eth_transaction_batch(
         sig_arrays.s,
         amounts,
         destinations,
-        fees,
         new_batch_nonce.clone().into(),
-        batch.token_contract.into(),
+        token_contracts,
     ];
-    let payload = clarity::abi::encode_call("submitBatch(address[],uint256[],uint256,uint8[],bytes32[],bytes32[],uint256[],address[],uint256[],uint256,address)",
+    let payload = clarity::abi::encode_call("submitBatch(address[],uint256[],uint256,uint8[],bytes32[],bytes32[],uint256[],address[],uint256,address[])",
     tokens).unwrap();
-    trace!("Tokens {:?}", tokens);
+    debug!("Tokens {:?}", tokens);
 
     let before_nonce = get_tx_batch_nonce(
         peggy_contract_address,
-        batch.token_contract,
         eth_address,
         &web3,
     )
@@ -102,7 +100,6 @@ pub async fn send_eth_transaction_batch(
 
     let last_nonce = get_tx_batch_nonce(
         peggy_contract_address,
-        batch.token_contract,
         eth_address,
         &web3,
     )

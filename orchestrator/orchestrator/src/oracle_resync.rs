@@ -23,7 +23,7 @@ pub async fn get_last_checked_block(
             0u8.into(),
             None,
             vec![peggy_contract_address],
-            vec!["TransactionBatchExecutedEvent(uint256,address,uint256)"],
+            vec!["TransactionBatchExecutedEvent(uint256,uint256)"],
         )
         .await
         .unwrap();

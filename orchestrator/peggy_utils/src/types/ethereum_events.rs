@@ -1,4 +1,5 @@
-use clarity::Address as EthAddress;
+use clarity::{Address as EthAddress, abi::derive_signature};
+
 use deep_space::address::Address as CosmosAddress;
 use num256::Uint256;
 use web30::types::Log;
@@ -43,9 +44,6 @@ pub struct TransactionBatchExecutedEvent {
     /// the nonce attached to the transaction batch that follows
     /// it throughout it's lifecycle
     pub batch_nonce: Uint256,
-    /// The ERC20 token contract address for the batch executed, since batches are uniform
-    /// in token type there is only one
-    pub erc20: EthAddress,
     /// the event nonce representing a unique ordering of events coming out
     /// of the Peggy solidity contract. Ensuring that these events can only be played
     /// back in order
@@ -53,16 +51,23 @@ pub struct TransactionBatchExecutedEvent {
 }
 
 impl TransactionBatchExecutedEvent {
-    pub fn from_log(input: &Log) -> Result<TransactionBatchExecutedEvent, PeggyError> {
-        if let (Some(batch_nonce_data), Some(erc20_data)) =
-            (input.topics.get(1), input.topics.get(2))
+    pub fn from_log(input: &Log) -> Result<TransactionBatchExecutedEvent, PeggyError> { 
+        let topics = (
+            input.topics.get(0),
+            input.topics.get(1),
+        );       
+        if let (Some(sig),Some(batch_nonce_data)) = topics
         {
+            let event_sig = derive_signature("TransactionBatchExecutedEvent(uint256,uint256)")?; 
+            if event_sig != sig.as_slice() {
+                return Err(PeggyError::InvalidEventLogError(
+                    "Too few topics".to_string(),
+                ))
+            };
             let batch_nonce = Uint256::from_bytes_be(batch_nonce_data);
-            let erc20 = EthAddress::from_slice(&erc20_data[12..32])?;
             let event_nonce = Uint256::from_bytes_be(&input.data);
             Ok(TransactionBatchExecutedEvent {
                 batch_nonce,
-                erc20,
                 event_nonce,
             })
         } else {
@@ -110,11 +115,19 @@ pub struct SendToCosmosEvent {
 impl SendToCosmosEvent {
     pub fn from_log(input: &Log) -> Result<SendToCosmosEvent, PeggyError> {
         let topics = (
+            input.topics.get(0),
             input.topics.get(1),
             input.topics.get(2),
             input.topics.get(3),
         );
-        if let (Some(erc20_data), Some(sender_data), Some(destination_data)) = topics {
+        if let (Some(sig),Some(erc20_data), Some(sender_data), Some(destination_data)) = topics {
+            let event_sig = derive_signature("SendToCosmosEvent(address,address,bytes32,uint256,uint256)")?; 
+            if event_sig != sig.as_slice() {
+                return Err(PeggyError::InvalidEventLogError(
+                    "Too few topics".to_string(),
+                ))
+            };
+
             let erc20 = EthAddress::from_slice(&erc20_data[12..32])?;
             let sender = EthAddress::from_slice(&sender_data[12..32])?;
             // this is required because deep_space requires a fixed length slice to

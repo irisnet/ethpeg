@@ -62,14 +62,14 @@ func TestBatches(t *testing.T) {
 		Transactions: []*types.OutgoingTransferTx{
 			{
 				Id:          2,
-				Erc20Fee:    types.NewERC20Token(3, myTokenContractAddr),
+				Fee:         sdk.NewInt64Coin("stake", 3),
 				Sender:      mySender.String(),
 				DestAddress: myReceiver,
 				Erc20Token:  types.NewERC20Token(101, myTokenContractAddr),
 			},
 			{
 				Id:          1,
-				Erc20Fee:    types.NewERC20Token(2, myTokenContractAddr),
+				Fee:         sdk.NewInt64Coin("stake", 2),
 				Sender:      mySender.String(),
 				DestAddress: myReceiver,
 				Erc20Token:  types.NewERC20Token(100, myTokenContractAddr),
@@ -126,14 +126,14 @@ func TestBatches(t *testing.T) {
 		Transactions: []*types.OutgoingTransferTx{
 			{
 				Id:          6,
-				Erc20Fee:    types.NewERC20Token(5, myTokenContractAddr),
+				Fee:         sdk.NewInt64Coin("stake", 5),
 				Sender:      mySender.String(),
 				DestAddress: myReceiver,
 				Erc20Token:  types.NewERC20Token(101, myTokenContractAddr),
 			},
 			{
 				Id:          5,
-				Erc20Fee:    types.NewERC20Token(4, myTokenContractAddr),
+				Fee:         sdk.NewInt64Coin("stake", 4),
 				Sender:      mySender.String(),
 				DestAddress: myReceiver,
 				Erc20Token:  types.NewERC20Token(100, myTokenContractAddr),

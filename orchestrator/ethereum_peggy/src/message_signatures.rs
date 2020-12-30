@@ -1,4 +1,5 @@
 use clarity::abi::{encode_tokens, Token};
+use deep_space::coin::Coin;
 use peggy_utils::types::{TransactionBatch, Valset};
 
 /// takes the required input data and produces the required signature to confirm a validator
@@ -104,15 +105,14 @@ fn test_valset_signature() {
 pub fn encode_tx_batch_confirm(peggy_id: String, batch: TransactionBatch) -> Vec<u8> {
     // transaction batches include a validator set update, the way this is verified is that the valset checkpoint
     // (encoded ethereum data) is included within the batch signature, which is itself a checkpoint over the batch data
-    let (amounts, destinations, fees) = batch.get_checkpoint_values();
+    let (amounts, destinations, token_contracts) = batch.get_checkpoint_values();
     encode_tokens(&[
         Token::FixedString(peggy_id),
         Token::FixedString("transactionBatch".to_string()),
         amounts,
         destinations,
-        fees,
         batch.nonce.into(),
-        batch.token_contract.into(),
+        token_contracts,
     ])
 }
 
@@ -124,7 +124,7 @@ fn test_batch_signature() {
     use sha3::{Digest, Keccak256};
 
     let correct_hash: Vec<u8> =
-        hex_str_to_bytes("0x731fc6e7e13e4c4bd45664c9272d49e5a9b55bccb54cfcc0704465f9de491e86")
+        hex_str_to_bytes("0x0a136946eb30ed7b24963c464d817de75e997315e12e2bc99347a8db727269f9")
             .unwrap();
     let erc20_addr = "0x34Ac3eB6180FdD94043664C22043F004734Dc480"
         .parse()
@@ -138,6 +138,10 @@ fn test_batch_signature() {
         token_contract_address: erc20_addr,
     };
 
+    let fee = Coin {
+        amount: 1u64.into(),
+        denom: "stake".to_string(),
+    };
     let batch = TransactionBatch {
         nonce: 1u64,
         transactions: vec![BatchTransaction {
@@ -146,11 +150,10 @@ fn test_batch_signature() {
                 .parse()
                 .unwrap(),
             sender: sender_addr,
-            erc20_fee: token.clone(),
+            fee: fee,
             erc20_token: token.clone(),
         }],
-        total_fee: token,
-        token_contract: erc20_addr,
+        token_contracts: vec![erc20_addr],
     };
 
     let checkpoint = encode_tx_batch_confirm("foo".to_string(), batch);

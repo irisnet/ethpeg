@@ -35,7 +35,6 @@ impl ValsetConfirmResponse {
 pub struct BatchConfirmResponse {
     pub nonce: u64,
     pub validator: CosmosAddress,
-    pub token_contract: EthAddress,
     pub ethereum_signer: EthAddress,
     pub eth_signature: EthSignature,
 }
@@ -45,7 +44,6 @@ impl BatchConfirmResponse {
         Ok(BatchConfirmResponse {
             nonce: input.nonce,
             validator: input.validator.parse()?,
-            token_contract: input.token_contract.parse()?,
             ethereum_signer: input.eth_signer.parse()?,
             eth_signature: input.signature.parse()?,
         })

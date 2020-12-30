@@ -42,7 +42,7 @@ func (b OutgoingTxBatch) GetCheckpoint(peggyIDstring string) ([]byte, error) {
 	for i, tx := range b.Transactions {
 		txAmounts[i] = tx.Erc20Token.Amount.BigInt()
 		txDestinations[i] = gethcommon.HexToAddress(tx.DestAddress)
-		tokenContracts[i] = gethcommon.HexToAddress(tx.Erc20Fee.Contract)
+		tokenContracts[i] = gethcommon.HexToAddress(tx.Erc20Token.Contract)
 	}
 
 	// the methodName needs to be the same as the 'name' above in the checkpointAbiJson

@@ -357,7 +357,7 @@ async fn test_batch(
         .expect("Failed to get batch to sign");
 
     let mut current_eth_batch_nonce =
-        get_tx_batch_nonce(peggy_address, erc20_contract, *MINER_ADDRESS, &web30)
+        get_tx_batch_nonce(peggy_address,  *MINER_ADDRESS, &web30)
             .await
             .expect("Failed to get current eth valset");
     let starting_batch_nonce = current_eth_batch_nonce;
@@ -369,7 +369,7 @@ async fn test_batch(
             starting_batch_nonce
         );
         current_eth_batch_nonce =
-            get_tx_batch_nonce(peggy_address, erc20_contract, *MINER_ADDRESS, &web30)
+            get_tx_batch_nonce(peggy_address,  *MINER_ADDRESS, &web30)
                 .await
                 .expect("Failed to get current eth tx batch nonce");
         delay_for(Duration::from_secs(4)).await;

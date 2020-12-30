@@ -131,12 +131,11 @@ pub async fn get_latest_transaction_batches(
 pub async fn get_transaction_batch_signatures(
     client: &mut PeggyQueryClient<Channel>,
     nonce: u64,
-    contract_address: EthAddress,
 ) -> Result<Vec<BatchConfirmResponse>, PeggyError> {
     let request = client
         .batch_confirms(QueryBatchConfirmsRequest {
             nonce,
-            contract_address: contract_address.to_string(),
+            contract_address: "".to_string(),
         })
         .await?;
     let batch_confirms = request.into_inner().confirms;

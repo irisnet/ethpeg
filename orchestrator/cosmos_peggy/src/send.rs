@@ -177,7 +177,6 @@ pub async fn send_batch_confirm(
         },
         msgs: vec![PeggyMsg::ConfirmBatchMsg(ConfirmBatchMsg {
             validator: our_address,
-            token_contract: transaction_batch.token_contract,
             eth_signer: our_eth_address,
             nonce: transaction_batch.nonce.into(),
             eth_signature: bytes_to_hex_str(&eth_signature.to_bytes()),

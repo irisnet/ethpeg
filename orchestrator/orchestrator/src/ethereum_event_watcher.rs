@@ -41,7 +41,7 @@ pub async fn check_for_events(
             starting_block.clone(),
             Some(latest_block.clone()),
             vec![peggy_contract_address],
-            vec!["TransactionBatchExecutedEvent(uint256,address,uint256)"],
+            vec!["TransactionBatchExecutedEvent(uint256,uint256)"],
         )
         .await;
     trace!("Batches {:?}", batches);
@@ -82,8 +82,8 @@ pub async fn check_for_events(
         }
         if !withdraws.is_empty() {
             info!(
-                "Oracle observed batch with nonce {}, contract {}, and event nonce {}",
-                withdraws[0].batch_nonce, withdraws[0].erc20, withdraws[0].event_nonce
+                "Oracle observed batch with nonce {},  and event nonce {}",
+                withdraws[0].batch_nonce,  withdraws[0].event_nonce
             )
         }
 

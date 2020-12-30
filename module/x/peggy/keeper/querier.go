@@ -131,7 +131,7 @@ func queryAllBatchConfirms(ctx sdk.Context, nonceStr string, tokenContract strin
 	}
 
 	var confirms []types.MsgConfirmBatch
-	keeper.IterateBatchConfirmByNonceAndTokenContract(ctx, nonce, tokenContract, func(_ []byte, c types.MsgConfirmBatch) bool {
+	keeper.IterateBatchConfirmByNonceAndTokenContract(ctx, nonce, func(_ []byte, c types.MsgConfirmBatch) bool {
 		confirms = append(confirms, c)
 		return false
 	})
@@ -250,7 +250,7 @@ func lastPendingBatchRequest(ctx sdk.Context, operatorAddr string, keeper Keeper
 
 	var pendingBatchReq *types.OutgoingTxBatch
 	keeper.IterateOutgoingTXBatches(ctx, func(_ []byte, batch *types.OutgoingTxBatch) bool {
-		foundConfirm := keeper.GetBatchConfirm(ctx, batch.BatchNonce, batch.TokenContract, addr) != nil
+		foundConfirm := keeper.GetBatchConfirm(ctx, batch.BatchNonce, addr) != nil
 		if !foundConfirm {
 			pendingBatchReq = batch
 			return true

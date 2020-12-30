@@ -96,7 +96,7 @@ func (k Keeper) pickUnbatchedTX(ctx sdk.Context, contractAddress string, maxElem
 			Sender:      tx.Sender,
 			DestAddress: tx.DestAddr,
 			Erc20Token:  types.NewERC20Token(tx.Amount.Amount.Uint64(), contractAddress),
-			Erc20Fee:    types.NewERC20Token(tx.BridgeFee.Amount.Uint64(), contractAddress),
+			Fee:         tx.BridgeFee,
 		}
 		selectedTx = append(selectedTx, txOut)
 		err = k.removeFromUnbatchedTXIndex(ctx, tx.BridgeFee, txID)
@@ -118,7 +118,6 @@ func (k Keeper) GetOutgoingTXBatch(ctx sdk.Context, tokenContract string, nonce 
 	// TODO: figure out why it drops the contract address in the ERC20 token representation
 	for _, tx := range b.Transactions {
 		tx.Erc20Token.Contract = tokenContract
-		tx.Erc20Fee.Contract = tokenContract
 	}
 	return &b
 }
@@ -130,9 +129,8 @@ func (k Keeper) CancelOutgoingTXBatch(ctx sdk.Context, tokenContract string, non
 		return types.ErrUnknown
 	}
 	for _, tx := range batch.Transactions {
-		tx.Erc20Fee.Contract = tokenContract
 		//TODO refund coin
-		k.prependToUnbatchedTXIndex(ctx, tx.Erc20Fee.PeggyCoin(), tx.Id)
+		k.prependToUnbatchedTXIndex(ctx, tx.Fee, tx.Id)
 	}
 
 	// Delete batch since it is finished

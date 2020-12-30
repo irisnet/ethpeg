@@ -10,7 +10,7 @@ contract Peggy {
 
 	// These are updated often
 	bytes32 public state_lastValsetCheckpoint;
-	mapping(address => uint256) public state_lastBatchNonces;
+	uint256 public state_lastBatchNonce;
 	uint256 public state_lastValsetNonce = 0;
 	uint256 public state_lastEventNonce = 0;
 
@@ -24,11 +24,7 @@ contract Peggy {
 	//
 	// ValsetUpdatedEvent does not include the field _eventNonce because it is never submitted to the Cosmos
 	// module. It is purely for the use of relayers to allow them to successfully submit batches.
-	event TransactionBatchExecutedEvent(
-		uint256 indexed _batchNonce,
-		address[] indexed _token,
-		uint256 _eventNonce
-	);
+	event TransactionBatchExecutedEvent(uint256 indexed _batchNonce, uint256 _eventNonce);
 	event SendToCosmosEvent(
 		address indexed _tokenContract,
 		address indexed _sender,
@@ -75,10 +71,6 @@ contract Peggy {
 
 	// END TEST FIXTURES
 
-	function lastBatchNonce(address _erc20Address) public view returns (uint256) {
-		return state_lastBatchNonces[_erc20Address];
-	}
-
 	// Utility function to verify geth style signatures
 	function verifySig(
 		address _signer,
@@ -87,9 +79,8 @@ contract Peggy {
 		bytes32 _r,
 		bytes32 _s
 	) private pure returns (bool) {
-		bytes32 messageDigest = keccak256(
-			abi.encodePacked("\x19Ethereum Signed Message:\n32", _theHash)
-		);
+		bytes32 messageDigest =
+			keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _theHash));
 		return _signer == ecrecover(messageDigest, _v, _r, _s);
 	}
 
@@ -110,9 +101,8 @@ contract Peggy {
 		// bytes32 encoding of the string "checkpoint"
 		bytes32 methodName = 0x636865636b706f696e7400000000000000000000000000000000000000000000;
 
-		bytes32 checkpoint = keccak256(
-			abi.encode(_peggyId, methodName, _valsetNonce, _validators, _powers)
-		);
+		bytes32 checkpoint =
+			keccak256(abi.encode(_peggyId, methodName, _valsetNonce, _validators, _powers));
 
 		return checkpoint;
 	}
@@ -210,12 +200,8 @@ contract Peggy {
 		);
 
 		// Check that enough current validators have signed off on the new validator set
-		bytes32 newCheckpoint = makeCheckpoint(
-			_newValidators,
-			_newPowers,
-			_newValsetNonce,
-			state_peggyId
-		);
+		bytes32 newCheckpoint =
+			makeCheckpoint(_newValidators, _newPowers, _newValsetNonce, state_peggyId);
 
 		checkValidatorSignatures(
 			_currentValidators,
@@ -258,7 +244,7 @@ contract Peggy {
 		uint256[] memory _amounts,
 		address[] memory _destinations,
 		uint256 _batchNonce,
-		address[] memory _tokenContract
+		address[] memory _tokenContracts
 	) public {
 		// CHECKS scoped to reduce stack depth
 		{
@@ -284,18 +270,16 @@ contract Peggy {
 
 			// Check that the transaction batch is well-formed
 			require(
-				_amounts.length == _destinations.length && _amounts.length == _tokenContract.length,
+				_amounts.length == _destinations.length &&
+					_amounts.length == _tokenContracts.length,
 				"Malformed batch of transactions"
 			);
 
-			for (uint256 i = 0; i < _tokenContract.length; i++) {
-				address _tokenContractAddr = _tokenContract[i];
-				// Check that the batch nonce is higher than the last nonce for this token
-				require(
-					state_lastBatchNonces[_tokenContractAddr] < _batchNonce,
-					"New batch nonce must be greater than the current nonce"
-				);
-			}
+			// Check that the batch nonce is higher than the last nonce for this token
+			require(
+				state_lastBatchNonce < _batchNonce,
+				"New batch nonce must be greater than the current nonce"
+			);
 
 			// Check that enough current validators have signed off on the transaction batch and valset
 			checkValidatorSignatures(
@@ -313,7 +297,7 @@ contract Peggy {
 						_amounts,
 						_destinations,
 						_batchNonce,
-						_tokenContract
+						_tokenContracts
 					)
 				),
 				state_powerThreshold
@@ -322,10 +306,7 @@ contract Peggy {
 			// ACTIONS
 			{
 				for (uint256 i = 0; i < _amounts.length; i++) {
-					address _tokenContractAddr = _tokenContract[i];
-					// Store batch nonce
-					state_lastBatchNonces[_tokenContractAddr] = _batchNonce;
-
+					address _tokenContractAddr = _tokenContracts[i];
 					IERC20(_tokenContractAddr).safeTransfer(_destinations[i], _amounts[i]);
 				}
 			}
@@ -333,8 +314,10 @@ contract Peggy {
 
 		// LOGS scoped to reduce stack depth
 		{
+			// Store batch nonce
+			state_lastBatchNonce = _batchNonce;
 			state_lastEventNonce = state_lastEventNonce.add(1);
-			emit TransactionBatchExecutedEvent(_batchNonce, _tokenContract, state_lastEventNonce);
+			emit TransactionBatchExecutedEvent(_batchNonce, state_lastEventNonce);
 		}
 	}
 

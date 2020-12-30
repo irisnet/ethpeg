@@ -102,7 +102,7 @@ func handleMsgValsetRequest(ctx sdk.Context, keeper keeper.Keeper, msg *types.Ms
 // This function takes in a signature submitted by a validator's Eth Signer
 func handleMsgConfirmBatch(ctx sdk.Context, keeper keeper.Keeper, msg *types.MsgConfirmBatch) (*sdk.Result, error) {
 
-	batch := keeper.GetOutgoingTXBatch(ctx, msg.TokenContract, msg.Nonce)
+	batch := keeper.GetTxBatch(ctx, msg.Nonce)
 	if batch == nil {
 		return nil, sdkerrors.Wrap(types.ErrInvalid, "couldn't find batch")
 	}
@@ -133,7 +133,7 @@ func handleMsgConfirmBatch(ctx sdk.Context, keeper keeper.Keeper, msg *types.Msg
 	}
 
 	// check if we already have this confirm
-	if keeper.GetBatchConfirm(ctx, msg.Nonce, msg.TokenContract, valaddr) != nil {
+	if keeper.GetBatchConfirm(ctx, msg.Nonce, valaddr) != nil {
 		return nil, sdkerrors.Wrap(types.ErrDuplicate, "signature duplicate")
 	}
 	key := keeper.SetBatchConfirm(ctx, msg)

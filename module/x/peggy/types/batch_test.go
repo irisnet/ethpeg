@@ -27,10 +27,7 @@ func TestOutgoingTxBatchCheckpointGold1(t *testing.T) {
 					Amount:   sdk.NewInt(0x1),
 					Contract: erc20Addr,
 				},
-				Erc20Fee: &ERC20Token{
-					Amount:   sdk.NewInt(0x1),
-					Contract: erc20Addr,
-				},
+				Fee: sdk.NewInt64Coin("stake", 1),
 			},
 		},
 		TokenContract: erc20Addr,
